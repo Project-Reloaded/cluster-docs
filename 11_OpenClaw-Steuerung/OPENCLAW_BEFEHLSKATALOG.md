@@ -8,6 +8,10 @@ Letzter Befehl jedes Repos = Session-Handoff mit den nächsten 10 Schritten.
 **Wahrheitshierarchie:** GitHub-Repo > ZIP > Evidence > Legacy > Chat 
 **Token (niemals in Chat!):** OpenClaw liest aus `/root/.openclaw/credentials.env`
 
+**B0 - Session-Start (vollstaendig):** Fuer alle KI-Tools (OpenClaw, ChatGPT, Claude, Copilot). Laedt Kontext, orientiert sich aus letztem Handoff, arbeitet weiter, speichert Pflicht-Handoff.
+
+**B1 - Schnellcheck:** Nur Status-Report, keine Aktion.
+
 ---
 
 ## REPO 1 — project-reloaded-cluster-v5
