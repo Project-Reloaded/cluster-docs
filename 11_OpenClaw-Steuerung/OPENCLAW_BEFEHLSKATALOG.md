@@ -663,3 +663,27 @@ Berichte:
 Erstelle danach einen Konsolidierungsplan in Cluster-Control-v5/CONSOLIDATION_PLAN.md.
 Pflicht-Abschluss: Committe Plan mit "docs: Service-Konsolidierungsplan erstellt"
 ```
+
+
+---
+
+## NW1 — Netzwerk-Audit (Alle Geräte prüfen)
+
+**Zweck:** Prüft Erreichbarkeit und Status aller Netzwerkgeräte im Cluster. Kein Login, kein Schreibzugriff — reine Statusprüfung.
+
+**Wann verwenden:** Vor größeren Konfigurationsänderungen, nach Neustart, bei Konnektivitätsproblemen.
+
+**Ablauf:**
+1. Lade Zugangsdaten aus `/root/.openclaw/credentials.env`
+2. Prüfe jeden Endpunkt per HTTP HEAD oder ping:
+ - UniFi Controller: `https://192.168.1.1`
+ - OPNsense Master: `http://192.168.1.49`
+ - OPNsense Backup/HA: `http://192.168.1.50`
+ - Pi-hole 1: `http://10.6.7.16`
+ - Pi-hole 2: `http://10.6.7.17`
+ - TP-Link Switch: `http://192.168.1.74`
+3. Zeige für jedes Gerät: ERREICHBAR / NICHT ERREICHBAR + HTTP-Statuscode
+4. Bei Problemen: beschreibe was fehlt und schlage Fix vor
+5. Bestätige mit: `NW1_AUDIT_DONE` oder liste offene Probleme
+
+**Hinweis:** Dieser Befehl ist der Pflicht-Einstieg vor allen NW2-NW9 Netzwerk-Konfigurationsbefehlen.
