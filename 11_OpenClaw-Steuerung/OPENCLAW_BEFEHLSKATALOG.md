@@ -604,3 +604,62 @@ Committe mit: "docs(session): Handoff [DATUM] [REPO] gespeichert"
 ---
 
 *Stand: 2026-04-16 | Gilt før alle 7 v5-Repos | Basis: LEGACY_DELTA_ANALYSE.md + LEGACY_STEUERUNG_VERGLEICH.md*
+
+
+---
+
+## CLUSTER-WEITE PHASEN-BEFEHLE
+
+### CW4 — Fabrik-Abschluss-Check
+
+```
+Pruefe ob REPO_NAME standalone fertig ist.
+Lies: README.md, docker-compose.yml (falls vorhanden), inventory/READINESS_SCORECARD.yaml.
+Berichte:
+  (1) Welche Kernfunktionen fehlen noch?
+  (2) Ist ein .env.example vorhanden?
+  (3) Gibt es einen funktionierenden Health-Check?
+  (4) Was ist der naechste konkrete Schritt bis zur Install-Fertigkeit?
+Keine Aktion, kein Commit. Nur Analyse.
+```
+
+### CW5 — Legacy-Migration (Funktion uebernehmen)
+
+```
+Migriere Funktion FUNKTION_NAME aus Legacy-Repo LEGACY_REPO nach ZIEL_REPO.
+Vorgehen:
+  1. Lies LEGACY_REPO/[Pfad zur Funktion]
+  2. Verstehe was sie tut — nicht blind kopieren
+  3. Passe die Logik an die v5-Struktur an
+  4. Schreibe sie in ZIEL_REPO/[Zielpfad]
+  5. Aktualisiere relevante Tests und Imports
+  6. Pflicht-Abschluss: Committe mit "feat: [FUNKTION_NAME] aus Legacy migriert"
+Repo-first gilt: Keine Aenderung ohne Commit.
+```
+
+### CW6 — Cluster-Integration (Fabrik einbinden)
+
+```
+Binde FABRIK_NAME in project-reloaded-cluster-v5 ein.
+Vorgehen:
+  1. Lies FABRIK_NAME/README.md und docker-compose.yml
+  2. Lies project-reloaded-cluster-v5/README.md und CLUSTER_ROADMAP.md
+  3. Erstelle/aktualisiere cluster-compose-Eintrag fuer FABRIK_NAME
+  4. Pruefe Service-Discovery-Konfiguration
+  5. Aktualisiere CLUSTER_ROADMAP.md Checkliste (Phase 3, Zeile FABRIK_NAME)
+  6. Pflicht-Abschluss: Committe mit "feat: FABRIK_NAME in Cluster integriert"
+```
+
+### CW7 — Service-Konsolidierung
+
+```
+Analysiere alle 6 Fabriken auf doppelte Dienste.
+Lies jeweils: docker-compose.yml oder Helm-Chart.
+Berichte:
+  (1) Welche Dienste laufen in mehr als 2 Fabriken identisch?
+  (2) Sind die Konfigurationen kompatibel (gleiche Version, gleiche Flags)?
+  (3) Welche koennen sicher zentralisiert werden, welche nicht?
+  (4) Geschaetzte VM-Einsparung nach Konsolidierung?
+Erstelle danach einen Konsolidierungsplan in Cluster-Control-v5/CONSOLIDATION_PLAN.md.
+Pflicht-Abschluss: Committe Plan mit "docs: Service-Konsolidierungsplan erstellt"
+```
