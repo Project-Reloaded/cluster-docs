@@ -687,3 +687,64 @@ Pflicht-Abschluss: Committe Plan mit "docs: Service-Konsolidierungsplan erstellt
 5. Bestätige mit: `NW1_AUDIT_DONE` oder liste offene Probleme
 
 **Hinweis:** Dieser Befehl ist der Pflicht-Einstieg vor allen NW2-NW9 Netzwerk-Konfigurationsbefehlen.
+
+
+---
+
+## VM1 — Proxmox-Cluster-Health
+
+**Zweck:** Zeigt den aktuellen Gesundheitsstatus aller VMs und Nodes im Proxmox-Cluster.
+
+**Ablauf:**
+1. Rufe `pve_node_status` für jeden Node ab
+2. Rufe `pve_list_vms` ab und prüfe für jede VM: Status (running/stopped), CPU-Last, RAM-Verbrauch, Disk
+3. Markiere kritische Werte: CPU > 80%, RAM > 85%, Disk > 90%
+4. Gib eine strukturierte Tabelle aus:
+ | VM | Status | CPU | RAM | Disk | Bewertung |
+5. Bestätige mit: `VM1_DONE` oder liste kritische VMs
+
+**Hinweis:** Nutzt ausschließlich die Proxmox-API-Tools (pve_api_get, pve_list_vms, pve_node_status).
+
+---
+
+## SYS1 — Service-Check auf allen VMs
+
+**Zweck:** Prüft auf definierten VMs ob kritische Services laufen und ob systemd-Fehler vorliegen.
+
+**Ablauf:**
+1. Lade Ziel-VMs aus `/root/.openclaw/credentials.env` (oder prüfe VM 100 = OpenClaw, VM 101+ = Services)
+2. Führe per `ssh_exec` auf jeder VM aus:
+ - `systemctl --failed --no-pager` → zeige fehlgeschlagene Services
+ - `df -h / /var` → Disk-Auslastung
+ - `free -m` → RAM-Status
+ - `uptime` → Load Average
+3. Erstelle kompakte Zusammenfassung pro VM: OK / WARNUNG / KRITISCH
+4. Bestätige mit: `SYS1_DONE` oder liste Probleme
+
+**Hinweis:** Pflicht-Einstieg vor jedem Deploy oder größeren Konfigurationsänderungen.
+
+---
+
+## AUDIT1 — Vollständiger Cluster-Audit
+
+**Zweck:** Führt NW1 + VM1 + SYS1 in einem Durchgang aus und erstellt einen strukturierten Gesundheitsbericht.
+
+**Ablauf:**
+1. Führe `NW1` aus → Netzwerk-Status aller 6 Geräte
+2. Führe `VM1` aus → Proxmox VM/Node-Status
+3. Führe `SYS1` aus → Service-Status auf kritischen VMs
+4. Erstelle einen Gesamtbericht im Format:
+
+ ```
+ === CLUSTER AUDIT REPORT [DATUM] ===
+ NETZWERK: [GRÜN/GELB/ROT] — X/6 Geräte erreichbar
+ VMs: [GRÜN/GELB/ROT] — X VMs laufen, Y kritisch
+ SERVICES: [GRÜN/GELB/ROT] — X fehlgeschlagene Services
+ GESAMT: [GRÜN/GELB/ROT]
+ ===================================
+ ```
+
+5. Speichere den Report als Session-File unter `_ai/openclaw/sessions/[DATUM]-AUDIT1-cluster.md` (im cluster-docs Repo)
+6. Bestätige mit: `AUDIT1_DONE`
+
+**Empfehlung:** Täglich per Cron oder vor jedem größeren Eingriff ausführen.
