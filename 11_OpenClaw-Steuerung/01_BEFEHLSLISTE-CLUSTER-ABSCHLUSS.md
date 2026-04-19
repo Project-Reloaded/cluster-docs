@@ -1,326 +1,319 @@
-# OpenClaw - Komplette Befehlsliste: Cluster-Repos fertigstellen
+# OpenClaw — Befehlsliste: Cluster-Repos fertigstellen
+# (mit Alt-Repo-Analyse und Review-Gates)
 
 > Stand: April 2026 | OpenClaw 2026.4.11 | VM 100 (192.168.1.20:18789)
-> Alle Befehle = Nachrichten, die du an OpenClaw schickst (WhatsApp / Telegram / WebSocket)
+> Alle Befehle = Nachrichten an OpenClaw (WhatsApp / Telegram / WebSocket)
 
 ---
 
-## 1. Zur Wiki-Frage: Speichert OpenClaw automatisch?
+## WICHTIGSTE REGEL: OpenClaw schreibt NIEMALS ohne deinen OK
 
-**Teilweise ja, aber nicht 100% zuverlaessig.**
+OpenClaw ist so konfiguriert:
+1. Zuerst altes + neues Repo LESEN
+2. Einen PLAN praesentieren (was woher kommt, was uebernommen wird)
+3. WARTEN auf deine Bestaetigung
+4. Erst nach "ja" / "ok" / "mach es" wird geschrieben
 
-OpenClaw ist im System-Prompt angewiesen: *"After any significant change: Always update the wiki."*
-Der `github-wiki` MCP-Server mit `wiki_write` ist vorhanden und aktiv.
-
-**Praxis-Regel:** Am Ende JEDER Session immer diesen Befehl schicken:
-
-```
-Speichere den heutigen Fortschritt ins Wiki unter 09_OpenClaw-Memory/DATUM.md
-mit einer Zusammenfassung was erledigt wurde und was noch offen ist.
-```
+Du musst also bei jedem Schritt aktiv zustimmen. Das ist Absicht.
 
 ---
 
-## 2. Aktueller Status aller Repos (geprueft 19.04.2026)
+## Alt-Repo-Mapping (wo die wertvollen Inhalte liegen)
 
-| Repo | Wave | INSTALL_SEQUENCE.md | CLUSTER_DEPS.md | docs/VM_SPEC.md |
-|------|------|---------------------|-----------------|-----------------|
-| RefactorCo-Fabrik-v5 | Wave 2/3 | [FEHLT] | [FEHLT] | [FEHLT] |
-| Cluster-Control-v5 | Wave 3 | [FEHLT] | [FEHLT] | [FEHLT] |
-| Trading-Fabrik-v5 | Wave 3 | [FEHLT] | [FEHLT] | [FEHLT] |
-| Social-Media-Fabrik-v5 | Wave 3 | [FEHLT] | [FEHLT] | [FEHLT] |
-| Marketing-Fabrik-v5 | Wave 3 | [FEHLT] | [FEHLT] | [FEHLT] |
-| Ebook-Fabrik-v5 | Wave 3 | [FEHLT] | [FEHLT] | [FEHLT] |
-| project-reloaded-cluster-v5 | Wave 3 | [FEHLT] | [FEHLT] | [FEHLT] |
+| Neues v5 Repo | Altes Repo mit Inhalt |
+|---------------|----------------------|
+| RefactorCo-Fabrik-v5 | RefactorCo-lab |
+| Social-Media-Fabrik-v5 | Social-Media-Fabrik |
+| Ebook-Fabrik-v5 | ebook-agent |
+| Trading-Fabrik-v5 | trading-lab |
+| project-reloaded-cluster-v5 | project-reloaded-cluster-v3, v4, archive |
+| Cluster-Control-v5 | (kein direkter Vorgaenger — aus v3/v4 ableiten) |
+| Marketing-Fabrik-v5 | (kein direkter Vorgaenger — aus platform-docs) |
 
-**Was fehlt ueberall (3 Dateien pro Repo = 21 Dateien gesamt):**
-- `INSTALL_SEQUENCE.md` - Installationsreihenfolge der Services auf den VMs
-- `CLUSTER_DEPS.md` - Abhaengigkeiten zu anderen Fabriken im Cluster
-- `docs/VM_SPEC.md` - VM-Spezifikation (CPU, RAM, Disk, Netzwerk)
+Weitere Quellen: webshop-core, webshop-forks, ops-automations, platform-docs
 
 ---
 
-## 3. Reihenfolge der Abarbeitung
+## Was aus den alten Repos ZWINGEND geprueft werden muss
 
-Repos EINZELN abarbeiten (nicht gleichzeitig).
+Folgende Themen stecken in den alten Repos und muessen besprochen werden:
 
-```
-1. RefactorCo-Fabrik-v5        <- Wave 2 abschliessen ZUERST
-2. Cluster-Control-v5          <- Kern-Infrastruktur
-3. Trading-Fabrik-v5
-4. Social-Media-Fabrik-v5
-5. Marketing-Fabrik-v5
-6. Ebook-Fabrik-v5
-7. project-reloaded-cluster-v5 <- ZULETZT (braucht alle anderen als Input)
-```
+- **GPU-Konfiguration** — wie werden GPUs angesprochen, welche Hardware
+- **AI-Modelle**: ChatGPT-Plus, Codex-Plus, MiniMax-API, OpenAI-API, lokale Modelle
+- **API-Keys / Credentials-Struktur** — wie waren sie organisiert
+- **Webshop-Integration** — webshop-core/forks relevanz fuer Fabriken
+- **Workflow-Logik** — was war der tatsaechliche Ablauf in den alten Repos
+- **VM-Rollen** — welche VMs liefen tatsaechlich wofuer
+
+Keines davon darf OpenClaw einfach "erfinden" — es muss aus den alten Repos
+gelesen und mit dir besprochen werden.
 
 ---
 
-## 4. SESSION-START - Immer zuerst senden
+## SESSION-START — Immer zuerst senden
 
 ```
-Lies den letzten Eintrag in cluster-docs/09_OpenClaw-Memory/ und gib mir
-eine kurze Zusammenfassung was zuletzt erledigt wurde und was heute als
-naechstes dran ist.
+Lies den letzten Eintrag in cluster-docs/09_OpenClaw-Memory/ und zeige mir
+eine Zusammenfassung was zuletzt erledigt wurde und was heute als naechstes dran ist.
 ```
 
 ---
 
-## 5. Befehlsliste pro Repo
+## Reihenfolge der Repos
+
+```
+1. RefactorCo-Fabrik-v5  (hat altes Repo: RefactorCo-lab)
+2. Cluster-Control-v5    (aus v3/v4 ableiten)
+3. Trading-Fabrik-v5     (hat altes Repo: trading-lab)
+4. Social-Media-Fabrik-v5 (hat altes Repo: Social-Media-Fabrik)
+5. Marketing-Fabrik-v5   (aus platform-docs ableiten)
+6. Ebook-Fabrik-v5       (hat altes Repo: ebook-agent)
+7. project-reloaded-cluster-v5  (ZULETZT — braucht alle anderen)
+```
+
+---
+
+## BEFEHLSLISTE PRO REPO
 
 ---
 
 ### REPO 1: RefactorCo-Fabrik-v5
-**Besonderheit:** Wave 2 zuerst abschliessen (VM_ROLLEN.md + Governance fehlen)
+**Altes Repo: RefactorCo-lab**
 
-**Schritt 1 - Wave 2 pruefen:**
+**Schritt A — Altes Repo analysieren (ERST LESEN):**
 ```
-Lies RefactorCo-Fabrik-v5/README.md und zeige mir den aktuellen Wave-Status
-und welche Wave-2-Dokumente noch fehlen.
-```
-
-**Schritt 2 - Wave 2 abschliessen:**
-```
-Erstelle in RefactorCo-Fabrik-v5 die fehlenden Wave-2-Dokumente.
-Lese docs/governance/ und docs/architecture/ fuer den Kontext.
-Erstelle VM_ROLLEN.md im Root mit Beschreibung der VM-Rollen.
-Schreibe danach ins Wiki was erstellt wurde.
+Analysiere das alte Repo RefactorCo-lab vollstaendig:
+- Lies README.md
+- Liste alle Dateien und Ordner auf
+- Lies alle relevanten Docs (Architektur, Workflow, VM-Konfiguration)
+- Suche nach: GPU-Konfigurationen, AI-Modell-Settings, API-Integrationen,
+  VM-Specs, Installationsanleitungen, Abhaengigkeiten zu anderen Services
+Erstelle NOCH NICHTS. Zeige mir eine strukturierte Zusammenfassung
+was du gefunden hast und was du fuer uebernahme-wuerdig haeltst.
 ```
 
-**Schritt 3 - INSTALL_SEQUENCE.md:**
+**Schritt B — Neues Repo gegenueberstellen:**
 ```
-Lies RefactorCo-Fabrik-v5/docs/architecture/ und WORKFLOW.md vollstaendig.
-Erstelle INSTALL_SEQUENCE.md im Root: Voraussetzungen, VM-Setup,
-Service-Deployment, Health-Checks.
-```
-
-**Schritt 4 - docs/VM_SPEC.md:**
-```
-Erstelle RefactorCo-Fabrik-v5/docs/VM_SPEC.md mit VM-Anforderungen:
-CPU, RAM, Disk, Netzwerk-Interfaces, Hostname-Schema, IP-Bereich.
+Lies jetzt RefactorCo-Fabrik-v5 vollstaendig und vergleiche mit RefactorCo-lab.
+Zeige mir:
+1. Was ist im alten Repo vorhanden aber noch nicht im neuen?
+2. Was wurde im neuen Repo anders/besser geloest?
+3. Was ist im alten Repo veraltet oder nicht mehr relevant?
+4. Offene Fragen die ich entscheiden muss
+Warte auf meine Antwort bevor du irgendetwas schreibst.
 ```
 
-**Schritt 5 - CLUSTER_DEPS.md:**
+**Schritt C — Du entscheidest, dann erst erstellen:**
 ```
-Lies RefactorCo-Fabrik-v5/docs/integrations/ oder docs/architecture/ und
-erstelle CLUSTER_DEPS.md: welche Services benoetigt diese Fabrik,
-welche stellt sie bereit?
+[NACH deiner Antwort auf den Vergleich]
+OK, uebernehme folgende Punkte aus RefactorCo-lab: [deine Angaben]
+Erstelle jetzt INSTALL_SEQUENCE.md, CLUSTER_DEPS.md und docs/VM_SPEC.md
+basierend auf dem was wir besprochen haben.
+Zeige mir den Entwurf jeder Datei BEVOR du committest.
 ```
 
-**Schritt 6 - Abschliessen:**
+**Schritt D — Commit nur nach finaler Freigabe:**
 ```
-Pruefe ob INSTALL_SEQUENCE.md, CLUSTER_DEPS.md und docs/VM_SPEC.md vorhanden sind.
-Aktualisiere README.md mit neuem Wave-Status.
-Speichere Zusammenfassung in cluster-docs/09_OpenClaw-Memory/refactorco-wave3-complete.md
+[NACH deiner Pruefung der Entwuerfe]
+Die Entwuerfe sind gut. Committe alle drei Dateien jetzt.
+Speichere danach den Fortschritt in cluster-docs/09_OpenClaw-Memory/refactorco-done.md
 ```
 
 ---
 
 ### REPO 2: Cluster-Control-v5
+**Kein direkter Vorgaenger — aus project-reloaded-cluster-v3 und v4 ableiten**
 
-**Schritt 1 - Kontext laden:**
+**Schritt A — Quell-Repos analysieren:**
 ```
-Lies Cluster-Control-v5/README.md, WORKFLOW.md und docs/architecture/ komplett.
-Zusammenfassung: Was macht diese Komponente?
-```
-
-**Schritt 2 - INSTALL_SEQUENCE.md:**
-```
-Erstelle Cluster-Control-v5/INSTALL_SEQUENCE.md:
-Voraussetzungen, VM-Setup, Control-Plane-Deployment, Integration-Tests, Health-Checks.
+Analysiere project-reloaded-cluster-v3 und project-reloaded-cluster-v4:
+Suche speziell nach: Cluster-Control Komponenten, Steuerlogik, Control-Plane-Konfiguration,
+GPU-Orchestrierung, AI-Modell-Verteilung auf VMs, welche Services von wo gesteuert werden.
+Erstelle NOCH NICHTS. Zeige mir Zusammenfassung + Vorschlag was uebernommen werden soll.
 ```
 
-**Schritt 3 - docs/VM_SPEC.md:**
+**Schritt B — Vergleich und Fragen:**
 ```
-Erstelle Cluster-Control-v5/docs/VM_SPEC.md.
-Control-VM braucht mehr CPU/RAM als Fabriken.
-```
-
-**Schritt 4 - CLUSTER_DEPS.md:**
-```
-Erstelle Cluster-Control-v5/CLUSTER_DEPS.md:
-Alle Fabriken sind Downstream-Abhaengigkeiten.
-Welche Infrastruktur braucht Control selbst?
+Lese Cluster-Control-v5 vollstaendig. Vergleiche mit was du in v3/v4 gefunden hast.
+Welche Control-Logik fehlt noch im v5? Was muss ich entscheiden?
 ```
 
-**Schritt 5 - Wiki:**
-```
-Speichere Fortschritt in cluster-docs/09_OpenClaw-Memory/cluster-control-wave3-complete.md
-```
+**Schritt C + D — wie bei Repo 1 (Entwurf zeigen, dann commit nach OK)**
 
 ---
 
 ### REPO 3: Trading-Fabrik-v5
+**Altes Repo: trading-lab**
 
-**Schritt 1 - Kontext:**
+**Schritt A:**
 ```
-Lies Trading-Fabrik-v5/README.md, WORKFLOW.md und docs/ komplett.
-Welche Services, welche externen APIs?
-```
-
-**Schritt 2 - INSTALL_SEQUENCE.md:**
-```
-Erstelle Trading-Fabrik-v5/INSTALL_SEQUENCE.md.
-Dokumentiere benoetigte Secrets/Credentials (ohne Werte!).
-Hinweis: Trading-Daten duerfen NICHT ins Repo.
+Analysiere trading-lab vollstaendig.
+Suche speziell nach: Trading-Algorithmen/Logik, API-Verbindungen (Broker, Exchanges),
+AI-Modell-Nutzung im Trading, GPU-Anforderungen, Daten-Handling (WICHTIG: keine
+Live-Trading-Daten ins Repo!), VM-Konfiguration, Workflow.
+Erstelle NOCH NICHTS. Zeige mir was du gefunden hast.
 ```
 
-**Schritt 3 - docs/VM_SPEC.md:**
+**Schritt B:**
 ```
-Erstelle Trading-Fabrik-v5/docs/VM_SPEC.md
-```
-
-**Schritt 4 - CLUSTER_DEPS.md:**
-```
-Erstelle Trading-Fabrik-v5/CLUSTER_DEPS.md mit Abhaengigkeiten zu anderen Fabriken.
+Vergleiche trading-lab mit Trading-Fabrik-v5.
+Was fehlt im neuen Repo? Was muss besprochen werden?
+Besondere Achtung: Credentials, API-Keys, Trading-Secrets — diese duerfen
+NIEMALS direkt ins Repo, nur als Platzhalter/Referenz.
 ```
 
-**Schritt 5 - Wiki:**
-```
-Speichere Fortschritt in cluster-docs/09_OpenClaw-Memory/trading-wave3-complete.md
-```
+**Schritt C + D — Entwurf zeigen, dann commit nach OK**
 
 ---
 
 ### REPO 4: Social-Media-Fabrik-v5
+**Altes Repo: Social-Media-Fabrik**
 
-**Schritt 1:**
+**Schritt A:**
 ```
-Lies Social-Media-Fabrik-v5/README.md, WORKFLOW.md und docs/ komplett.
-```
-
-**Schritt 2 - INSTALL_SEQUENCE.md:**
-```
-Erstelle Social-Media-Fabrik-v5/INSTALL_SEQUENCE.md inkl. OAuth/API-Key Setup.
-```
-
-**Schritt 3:** `Erstelle Social-Media-Fabrik-v5/docs/VM_SPEC.md`
-
-**Schritt 4 - CLUSTER_DEPS.md:**
-```
-Erstelle Social-Media-Fabrik-v5/CLUSTER_DEPS.md.
-Empfaengt Content von Marketing-Fabrik?
+Analysiere Social-Media-Fabrik vollstaendig.
+Suche nach: Social-Media-Plattformen (welche?), Content-Generierung mit AI-Modellen,
+Posting-Automatisierung, API-Integrationen (Instagram, LinkedIn, Twitter/X etc.),
+GPU/AI-Modell-Nutzung fuer Content, Abhaengigkeiten zu Marketing-Fabrik.
+Erstelle NOCH NICHTS. Zeige mir Zusammenfassung.
 ```
 
-**Schritt 5:** `Speichere in cluster-docs/09_OpenClaw-Memory/social-media-wave3-complete.md`
+**Schritt B:**
+```
+Vergleiche Social-Media-Fabrik mit Social-Media-Fabrik-v5.
+Was fehlt? Was wurde neu strukturiert? Offene Entscheidungen?
+```
+
+**Schritt C + D — Entwurf zeigen, dann commit nach OK**
 
 ---
 
 ### REPO 5: Marketing-Fabrik-v5
+**Kein direkter Vorgaenger — aus platform-docs und Cluster-v3/v4 ableiten**
 
-**Schritt 1:** `Lies Marketing-Fabrik-v5/README.md, WORKFLOW.md und docs/`
-
-**Schritt 2:** `Erstelle Marketing-Fabrik-v5/INSTALL_SEQUENCE.md`
-
-**Schritt 3:** `Erstelle Marketing-Fabrik-v5/docs/VM_SPEC.md`
-
-**Schritt 4 - CLUSTER_DEPS.md:**
+**Schritt A:**
 ```
-Erstelle Marketing-Fabrik-v5/CLUSTER_DEPS.md.
-Marketing liefert Content an Social-Media - beide Richtungen dokumentieren.
+Analysiere platform-docs vollstaendig auf Marketing-relevante Inhalte.
+Pruefe auch project-reloaded-cluster-v4 auf Marketing-Komponenten.
+Suche nach: Content-Pipeline, AI-Content-Generierung (welche Modelle?),
+Marketing-Automatisierung, Verbindung zu anderen Fabriken.
+Erstelle NOCH NICHTS. Zeige mir was du gefunden hast.
 ```
 
-**Schritt 5:** `Speichere in cluster-docs/09_OpenClaw-Memory/marketing-wave3-complete.md`
+**Schritt B:**
+```
+Lies Marketing-Fabrik-v5 vollstaendig.
+Was ist der aktuelle Stand? Was fehlt komplett?
+Welche Entscheidungen brauche ich von dir um weiterzumachen?
+```
+
+**Schritt C + D — Entwurf zeigen, dann commit nach OK**
 
 ---
 
 ### REPO 6: Ebook-Fabrik-v5
+**Altes Repo: ebook-agent**
 
-**Schritt 1:**
+**Schritt A:**
 ```
-Lies Ebook-Fabrik-v5/README.md, WORKFLOW.md und docs/ komplett.
-Vorhandene Ordner: agents, architecture, factory, governance, knowledge,
-migration, operators, process, runtime
+Analysiere ebook-agent vollstaendig.
+Suche nach: Ebook-Generierungs-Pipeline, AI-Modelle fuer Content (welche?),
+GPU-Nutzung, Input-Quellen (woher kommen die Inhalte?), Output-Format,
+Abhaengigkeiten zu anderen Fabriken, Deployment-Konfiguration.
+Ebook-Fabrik-v5 hat bereits: agents/, architecture/, factory/, governance/,
+knowledge/, migration/, operators/, process/, runtime/ — vergleiche damit.
+Erstelle NOCH NICHTS. Zeige mir Zusammenfassung + Vorschlag.
 ```
 
-**Schritt 2 - INSTALL_SEQUENCE.md:**
+**Schritt B:**
 ```
-Erstelle Ebook-Fabrik-v5/INSTALL_SEQUENCE.md.
-Beachte runtime/ - dort stehen die Deployment-Infos.
+Vergleiche ebook-agent mit Ebook-Fabrik-v5.
+Was ist besser im alten Repo dokumentiert? Was fehlt noch?
 ```
 
-**Schritt 3:** `Erstelle Ebook-Fabrik-v5/docs/VM_SPEC.md`
-
-**Schritt 4:** `Erstelle Ebook-Fabrik-v5/CLUSTER_DEPS.md (von welchen Fabriken kommen Inputs?)`
-
-**Schritt 5:** `Speichere in cluster-docs/09_OpenClaw-Memory/ebook-wave3-complete.md`
+**Schritt C + D — Entwurf zeigen, dann commit nach OK**
 
 ---
 
 ### REPO 7: project-reloaded-cluster-v5 (ZULETZT!)
+**Alte Repos: v3, v4, archive — erst wenn alle anderen fertig**
 
-**Schritt 1 - Alle Repos pruefen:**
+**Schritt A — Nur starten wenn Repos 1-6 fertig:**
 ```
-Pruefe ob in allen 6 Fabrik-Repos INSTALL_SEQUENCE.md, CLUSTER_DEPS.md
-und docs/VM_SPEC.md vorhanden sind. Zeige Statusuebersicht.
-```
-
-**Schritt 2 - Master INSTALL_SEQUENCE.md:**
-```
-Lies alle INSTALL_SEQUENCE.md aus den 6 Repos und erstelle
-project-reloaded-cluster-v5/INSTALL_SEQUENCE.md als Master-Anleitung.
-Reihenfolge: Infrastruktur zuerst, dann Fabriken nach Abhaengigkeiten.
+Pruefe ob in allen 6 Fabrik-Repos (RefactorCo, Cluster-Control, Trading,
+Social-Media, Marketing, Ebook) die Dateien INSTALL_SEQUENCE.md,
+CLUSTER_DEPS.md und docs/VM_SPEC.md committed wurden.
+Zeige mir den Status als Tabelle.
 ```
 
-**Schritt 3 - Master VM_SPEC.md:**
+**Schritt B — Grosse Analyse:**
 ```
-Erstelle project-reloaded-cluster-v5/docs/VM_SPEC.md als Gesamtuebersicht
-aller VMs mit Links auf die einzelnen Fabrik-VM_SPEC.md Dateien.
-```
-
-**Schritt 4 - Master CLUSTER_DEPS.md:**
-```
-Erstelle project-reloaded-cluster-v5/CLUSTER_DEPS.md als vollstaendigen
-Dependency-Graph aller Fabriken untereinander.
+Analysiere project-reloaded-cluster-v3, v4 und project-reloaded-cluster-archive
+auf: Master-Installationsreihenfolge, Cluster-Topologie, GPU-Verteilung auf VMs,
+AI-Modell-Zuweisung zu Fabriken, Netzwerk-Konfiguration zwischen Fabriken,
+Webshop-Integration (webshop-core/webshop-forks Bezug), gemeinsame Infrastruktur.
+Erstelle NOCH NICHTS. Zeige vollstaendige Zusammenfassung.
 ```
 
-**Schritt 5 - Gates setzen:**
+**Schritt C:**
+```
+Vergleiche jetzt alle Erkenntnisse mit project-reloaded-cluster-v5.
+Was fehlt in der Master-Struktur? Welche Entscheidungen brauche ich von dir?
+Besonders: GPU-Zuweisung, AI-Modell-Verteilung, Webshop-Integration — 
+diese Punkte MUESSEN besprochen werden bevor ich schreibe.
+```
+
+**Schritt D — Master-Dateien nach deiner Entscheidung:**
+```
+[NACH deinen Antworten]
+Erstelle Master-INSTALL_SEQUENCE.md basierend auf was wir besprochen haben.
+Zeige mir Entwurf vor dem Commit.
+```
+
+**Schritt E — Gates und Abschluss:**
 ```
 Pruefe delta_wave_ready und cross_repo_ready Gates.
-Wenn beide PASS: Erstelle project-reloaded-cluster-v5/docs/CLUSTER_INTEGRATION_READY.md
-und aktualisiere alle README.md auf Wave 4.
+Wenn beide PASS: Zeige mir Entwurf fuer CLUSTER_INTEGRATION_READY.md
+und den Wave-4-Status-Update fuer alle READMEs.
+Erst nach meinem OK alles committen.
 ```
 
-**Schritt 6 - Abschlussbericht:**
+**Schritt F — Abschlussbericht:**
 ```
-Schreibe Abschlussbericht in cluster-docs/09_OpenClaw-Memory/CLUSTER-WAVE4-COMPLETE.md:
-- Was wurde erledigt
-- Alle erstellten Dateien
-- Naechste Schritte Wave 5 (Testen, Deployment)
-Aktualisiere cluster-docs/05_Fabriken/ mit neuem Status.
-```
-
----
-
-## 6. Schnell-Befehl: Gesamtstatus pruefen
-
-```
-Pruefe in allen 7 v5-Repos ob INSTALL_SEQUENCE.md, CLUSTER_DEPS.md und
-docs/VM_SPEC.md vorhanden sind. Zeige Statusuebersicht als Tabelle.
+Schreibe Abschlussbericht in cluster-docs/09_OpenClaw-Memory/CLUSTER-WAVE4-COMPLETE.md
+und aktualisiere cluster-docs/05_Fabriken/.
 ```
 
 ---
 
-## 7. Fehlerkorrektur
+## Schnell-Check: Aktueller Status
 
 ```
-Der letzte Commit war falsch. Lese [REPO]/[DATEI] nochmal und
-korrigiere [was falsch war]. Committe mit Message "fix: ..."
+Pruefe in allen 7 v5-Repos ob INSTALL_SEQUENCE.md, CLUSTER_DEPS.md
+und docs/VM_SPEC.md vorhanden sind. Zeige Tabelle.
+```
+
+## Schnell-Check: Was steckt im alten Repo?
+
+```
+Analysiere [REPO-NAME] und zeige mir alle Dateien + kurze Inhaltsangabe.
+Suche besonders nach GPU, AI-Modellen, API-Konfigurationen und VM-Specs.
 ```
 
 ---
 
-## 8. OpenClaw-Verbindung
+## Falls OpenClaw trotzdem blind schreiben will
+
+```
+STOP. Zeige mir zuerst den Plan was du schreiben willst und woher der Inhalt kommt.
+Ich entscheide dann ob du fortfahren kannst.
+```
+
+---
+
+## OpenClaw-Verbindung
 
 | Kanal | Adresse |
 |-------|---------|
 | WebSocket | http://192.168.1.20:18789 |
 | Health | http://192.168.1.20:18789/health |
-
----
-
-## 9. Zusammenfassung
-
-Pro Session: 1 Repo, 5-6 Schritte, Wiki-Save am Ende.
-Gesamtaufwand: ~7 Sessions a 20-30 Minuten.
-Ergebnis: Wave 4 + CLUSTER_INTEGRATION_READY Gate erfuellt.
