@@ -18,6 +18,21 @@ Du musst also bei jedem Schritt aktiv zustimmen. Das ist Absicht.
 
 ---
 
+## LESEREIHENFOLGE — Spielregel aller v5-Repos
+
+Jedes v5-Repo hat eine fixe Lesereihenfolge die im README steht und eingehalten werden muss:
+
+```
+AGENTS.md  ← IMMER ZUERST (definiert wer das Repo nutzen darf und wie)
+README.md
+[repo-spezifische Docs laut README-Startbefehl]
+```
+
+Diese Reihenfolge gilt fuer alle Schritt-B-Befehle unten (neues Repo lesen).
+Bei alten Repos (RefactorCo-lab, trading-lab usw.): AGENTS.md lesen falls vorhanden.
+
+---
+
 ## Alt-Repo-Mapping (wo die wertvollen Inhalte liegen)
 
 | Neues v5 Repo | Altes Repo mit Inhalt |
@@ -83,7 +98,7 @@ eine Zusammenfassung was zuletzt erledigt wurde und was heute als naechstes dran
 **Schritt A — Altes Repo analysieren (ERST LESEN):**
 ```
 Analysiere das alte Repo RefactorCo-lab vollstaendig:
-- Lies README.md
+- Lies AGENTS.md falls vorhanden, dann README.md
 - Liste alle Dateien und Ordner auf
 - Lies alle relevanten Docs (Architektur, Workflow, VM-Konfiguration)
 - Suche nach: GPU-Konfigurationen, AI-Modell-Settings, API-Integrationen,
@@ -94,7 +109,8 @@ was du gefunden hast und was du fuer uebernahme-wuerdig haeltst.
 
 **Schritt B — Neues Repo gegenueberstellen:**
 ```
-Lies jetzt RefactorCo-Fabrik-v5 vollstaendig und vergleiche mit RefactorCo-lab.
+Lies jetzt RefactorCo-Fabrik-v5 vollstaendig (Lesereihenfolge: AGENTS.md zuerst, dann README.md, dann alle weiteren Docs laut README-Startbefehl).
+Vergleiche mit RefactorCo-lab.
 Zeige mir:
 1. Was ist im alten Repo vorhanden aber noch nicht im neuen?
 2. Was wurde im neuen Repo anders/besser geloest?
@@ -126,7 +142,8 @@ Speichere danach den Fortschritt in cluster-docs/09_OpenClaw-Memory/refactorco-d
 
 **Schritt A — Quell-Repos analysieren:**
 ```
-Analysiere project-reloaded-cluster-v3 und project-reloaded-cluster-v4:
+Lies zuerst AGENTS.md von Cluster-Control-v5 (Hausregeln des Ziel-Repos).
+Analysiere dann project-reloaded-cluster-v3 und project-reloaded-cluster-v4 (AGENTS.md falls vorhanden, dann README.md):
 Suche speziell nach: Cluster-Control Komponenten, Steuerlogik, Control-Plane-Konfiguration,
 GPU-Orchestrierung, AI-Modell-Verteilung auf VMs, welche Services von wo gesteuert werden.
 Erstelle NOCH NICHTS. Zeige mir Zusammenfassung + Vorschlag was uebernommen werden soll.
@@ -134,7 +151,8 @@ Erstelle NOCH NICHTS. Zeige mir Zusammenfassung + Vorschlag was uebernommen werd
 
 **Schritt B — Vergleich und Fragen:**
 ```
-Lese Cluster-Control-v5 vollstaendig. Vergleiche mit was du in v3/v4 gefunden hast.
+Lese Cluster-Control-v5 vollstaendig (AGENTS.md zuerst, dann README.md, dann laut README-Startbefehl).
+Vergleiche mit was du in v3/v4 gefunden hast.
 Welche Control-Logik fehlt noch im v5? Was muss ich entscheiden?
 ```
 
@@ -147,7 +165,8 @@ Welche Control-Logik fehlt noch im v5? Was muss ich entscheiden?
 
 **Schritt A:**
 ```
-Analysiere trading-lab vollstaendig.
+Lies zuerst AGENTS.md von Trading-Fabrik-v5 (Hausregeln des Ziel-Repos, inkl. Sicherheitsregeln fuer Live-Keys).
+Analysiere dann trading-lab (AGENTS.md falls vorhanden, dann README.md).
 Suche speziell nach: Trading-Algorithmen/Logik, API-Verbindungen (Broker, Exchanges),
 AI-Modell-Nutzung im Trading, GPU-Anforderungen, Daten-Handling (WICHTIG: keine
 Live-Trading-Daten ins Repo!), VM-Konfiguration, Workflow.
@@ -156,6 +175,7 @@ Erstelle NOCH NICHTS. Zeige mir was du gefunden hast.
 
 **Schritt B:**
 ```
+Lies Trading-Fabrik-v5 vollstaendig (AGENTS.md zuerst — dort stehen die Sicherheitsregeln fuer Live-Keys und Node-4-Zugriff — dann README.md laut Startbefehl).
 Vergleiche trading-lab mit Trading-Fabrik-v5.
 Was fehlt im neuen Repo? Was muss besprochen werden?
 Besondere Achtung: Credentials, API-Keys, Trading-Secrets — diese duerfen
@@ -171,7 +191,8 @@ NIEMALS direkt ins Repo, nur als Platzhalter/Referenz.
 
 **Schritt A:**
 ```
-Analysiere Social-Media-Fabrik vollstaendig.
+Lies zuerst AGENTS.md von Social-Media-Fabrik-v5 (Hausregeln des Ziel-Repos).
+Analysiere dann Social-Media-Fabrik (AGENTS.md falls vorhanden, dann README.md).
 Suche nach: Social-Media-Plattformen (welche?), Content-Generierung mit AI-Modellen,
 Posting-Automatisierung, API-Integrationen (Instagram, LinkedIn, Twitter/X etc.),
 GPU/AI-Modell-Nutzung fuer Content, Abhaengigkeiten zu Marketing-Fabrik.
@@ -180,6 +201,7 @@ Erstelle NOCH NICHTS. Zeige mir Zusammenfassung.
 
 **Schritt B:**
 ```
+Lies Social-Media-Fabrik-v5 vollstaendig (AGENTS.md zuerst, dann README.md laut Startbefehl).
 Vergleiche Social-Media-Fabrik mit Social-Media-Fabrik-v5.
 Was fehlt? Was wurde neu strukturiert? Offene Entscheidungen?
 ```
@@ -193,7 +215,8 @@ Was fehlt? Was wurde neu strukturiert? Offene Entscheidungen?
 
 **Schritt A:**
 ```
-Analysiere platform-docs vollstaendig auf Marketing-relevante Inhalte.
+Lies zuerst AGENTS.md von Marketing-Fabrik-v5 (Hausregeln des Ziel-Repos).
+Analysiere dann platform-docs vollstaendig auf Marketing-relevante Inhalte.
 Pruefe auch project-reloaded-cluster-v4 auf Marketing-Komponenten.
 Suche nach: Content-Pipeline, AI-Content-Generierung (welche Modelle?),
 Marketing-Automatisierung, Verbindung zu anderen Fabriken.
@@ -202,7 +225,7 @@ Erstelle NOCH NICHTS. Zeige mir was du gefunden hast.
 
 **Schritt B:**
 ```
-Lies Marketing-Fabrik-v5 vollstaendig.
+Lies Marketing-Fabrik-v5 vollstaendig (AGENTS.md zuerst, dann README.md laut Startbefehl).
 Was ist der aktuelle Stand? Was fehlt komplett?
 Welche Entscheidungen brauche ich von dir um weiterzumachen?
 ```
@@ -216,7 +239,8 @@ Welche Entscheidungen brauche ich von dir um weiterzumachen?
 
 **Schritt A:**
 ```
-Analysiere ebook-agent vollstaendig.
+Lies zuerst AGENTS.md von Ebook-Fabrik-v5 (Hausregeln des Ziel-Repos).
+Analysiere dann ebook-agent (AGENTS.md falls vorhanden, dann README.md).
 Suche nach: Ebook-Generierungs-Pipeline, AI-Modelle fuer Content (welche?),
 GPU-Nutzung, Input-Quellen (woher kommen die Inhalte?), Output-Format,
 Abhaengigkeiten zu anderen Fabriken, Deployment-Konfiguration.
@@ -227,6 +251,7 @@ Erstelle NOCH NICHTS. Zeige mir Zusammenfassung + Vorschlag.
 
 **Schritt B:**
 ```
+Lies Ebook-Fabrik-v5 vollstaendig (AGENTS.md zuerst, dann README.md laut Startbefehl).
 Vergleiche ebook-agent mit Ebook-Fabrik-v5.
 Was ist besser im alten Repo dokumentiert? Was fehlt noch?
 ```
@@ -248,7 +273,8 @@ Zeige mir den Status als Tabelle.
 
 **Schritt B — Grosse Analyse:**
 ```
-Analysiere project-reloaded-cluster-v3, v4 und project-reloaded-cluster-archive
+Lies zuerst AGENTS.md von project-reloaded-cluster-v5 (Lesereihenfolge: README → WAHRHEITS_HIERARCHIE → NODE_FABRIK_ZUORDNUNG → VM_ROLLEN).
+Analysiere dann project-reloaded-cluster-v3, v4 und project-reloaded-cluster-archive
 auf: Master-Installationsreihenfolge, Cluster-Topologie, GPU-Verteilung auf VMs,
 AI-Modell-Zuweisung zu Fabriken, Netzwerk-Konfiguration zwischen Fabriken,
 Webshop-Integration (webshop-core/webshop-forks Bezug), gemeinsame Infrastruktur.
@@ -273,7 +299,7 @@ Zeige mir Entwurf vor dem Commit.
 **Schritt E — Gates und Abschluss:**
 ```
 Pruefe delta_wave_ready und cross_repo_ready Gates.
-Wenn beide PASS: Zeige mir Entwurf fuer CLUSTER_INTEGRATION_READY.md
+Wenn beide PASS: Zeige mir Entwurf fuer CLUSTER_INTEGRATION_READY-md
 und den Wave-4-Status-Update fuer alle READMEs.
 Erst nach meinem OK alles committen.
 ```
@@ -289,7 +315,7 @@ und aktualisiere cluster-docs/05_Fabriken/.
 ## Schnell-Check: Aktueller Status
 
 ```
-Pruefe in allen 7 v5-Repos ob INSTALL_SEQUENCE.md, CLUSTER_DEPS.md
+Pruefe in allen 7 v5-Repos ob INSTALL_SEQUENCE.md, CLUSTER_DEPS-md
 und docs/VM_SPEC.md vorhanden sind. Zeige Tabelle.
 ```
 
@@ -314,6 +340,6 @@ Ich entscheide dann ob du fortfahren kannst.
 ## OpenClaw-Verbindung
 
 | Kanal | Adresse |
-|-------|---------|
+|------|--------|
 | WebSocket | http://192.168.1.20:18789 |
 | Health | http://192.168.1.20:18789/health |
