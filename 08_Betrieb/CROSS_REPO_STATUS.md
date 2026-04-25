@@ -1,6 +1,6 @@
 # CROSS_REPO_STATUS — Querschnitts-Tabelle aller v5-Repos
 
-> **Stand: 2026-04-25 (nach Block A für RefactorCo)** | Pfad: `cluster-docs/08_Betrieb/CROSS_REPO_STATUS.md`
+> **Stand: 2026-04-25 (cluster-weiter Bestandsdatei-Sync abgeschlossen)** | Pfad: `cluster-docs/08_Betrieb/CROSS_REPO_STATUS.md`
 > Wird referenziert in `OPENCLAW_BEFEHLSKATALOG.md` Abschnitt "CW1 — Cross-Repo-Status aktualisieren".
 > Quelle: README.md + AGENTS.md jedes Repos auf `main`.
 
@@ -19,17 +19,19 @@
 > Hinweis zu AGENTS.md: alle Repos haben sie auf Root-Level — auch wenn der Inhalt teilweise nur ein Stub-Header ist.
 > RefactorCo ist das einzige Repo mit `OPENCLAW_START_COMMAND.md` → laut **CW2** auf alle anderen 6 Repos ausrollen.
 
-## Wave-Stand pro Repo
+## Wave-Stand pro Repo (Stand 2026-04-25)
 
 | Repo | aktive Welle | Reifegrad | Statusfarbe | Nächste Welle blockt durch |
 |------|:------------:|----------:|:-----------:|----------------------------|
-| project-reloaded-cluster-v5 | 1 (Bootstrap) | n/a | gray | `cluster_integration_ready: FAIL` |
-| Cluster-Control-v5          | 0.5 / 1 | n/a | gray | `control_shared_ready: FAIL` |
-| Trading-Fabrik-v5           | 3.2 | 82 % | yellow | Welle-3 Legacy-Block schließen |
-| Social-Media-Fabrik-v5      | 3.1 | 93 % | yellow | Legacy-Vergleichs-Gap-Matrix |
-| Marketing-Fabrik-v5         | 3.1 | n/a | yellow | Legacy-Vergleichs-Gap-Matrix |
-| Ebook-Fabrik-v5             | 3.x | 87 % | green | Welle-3.1 Pflicht-Dateien (4 Stück) |
-| **RefactorCo-Fabrik-v5**    | **1-2 + Block B/C** | **52 %** | **yellow** | Block B (Welle 6 vorziehen), dann Block C (auf 80 %/grün) |
+| **project-reloaded-cluster-v5** | 1 (Bootstrap) | **35 %** *(nominal)* | red | Kein Candidate-Score, Neubewertung steht aus |
+| **Cluster-Control-v5**          | 0.5 / 1 | **32 %** *(nominal)* | red | Kein Candidate-Score, Neubewertung steht aus |
+| **Trading-Fabrik-v5**           | 3.x | **82 %** | yellow | Welle-3 Legacy-Block schließen |
+| **Social-Media-Fabrik-v5**      | 3.1 | **93 %** | yellow | Legacy-Vergleichs-Gap-Matrix |
+| **Marketing-Fabrik-v5**         | 3.1 | **63 %** | yellow | Delta-Gap-Matrix + harte Übernahmeregeln |
+| **Ebook-Fabrik-v5**             | 3.x | **87 %** | green | Welle-3.1 Pflicht-Dateien (4 Stück) |
+| **RefactorCo-Fabrik-v5**        | 1-2 + Block B/C | **52 %** | yellow | Block B (Welle 6 vorziehen), dann Block C (auf 80 %/grün) |
+
+> *(nominal)* = Wert vom 2026-04-11, **noch nicht neu bewertet**. Solange keine Candidate-Scorecard erstellt wurde, gilt dieser Wert weiter.
 
 ## Gates pro Repo (alle drei P1-Gates)
 
@@ -47,19 +49,18 @@
 
 ## Letzter Push pro Repo (laut GitHub API, 2026-04-25)
 
-| Repo | letzter Commit auf `main` | Branches sonst |
+| Repo | letzter Commit auf `main` | Today's Commit |
 |------|---------------------------|----------------|
-| cluster-docs                | 2026-04-25 (laufende Aktualisierung) | + `Project-Reloaded-patch-1` |
-| **RefactorCo-Fabrik-v5**    | **2026-04-25** (Block A: `f21ecf3`) | + 3 chatgpt/Project-Reloaded-patch Branches |
-| project-reloaded-cluster-v5 | 2026-04-16 | + `bootstrap-test`, `chatgpt-test-tree` |
-| Cluster-Control-v5          | 2026-04-16 | + `chatgpt/cluster-control-readme-naechster-start-fix` |
-| Ebook-Fabrik-v5             | 2026-04-16 | + `chatgpt/ebook-readme-naechster-start-fix` |
-| Marketing-Fabrik-v5         | 2026-04-16 | (nur main) |
-| Social-Media-Fabrik-v5      | 2026-04-16 | + 2 chatgpt + 1 wave1-Branch |
-| Trading-Fabrik-v5           | 2026-04-16 | + 4 chatgpt/wave/tree-test Branches |
+| cluster-docs                | 2026-04-25 | (laufende Aktualisierung) |
+| **RefactorCo-Fabrik-v5**    | 2026-04-25 | `f21ecf3` (Block A: 29→52%) |
+| **Trading-Fabrik-v5**       | 2026-04-25 | `1b5e444` (refresh, konsistent) |
+| **Social-Media-Fabrik-v5**  | 2026-04-25 | `7b07c6e` (refresh, konsistent) |
+| **Marketing-Fabrik-v5**     | 2026-04-25 | `d276b80` (refresh, konsistent) |
+| **Ebook-Fabrik-v5**         | 2026-04-25 | `fa51f18` (refresh, konsistent) |
+| **project-reloaded-cluster-v5** | 2026-04-25 | `d913595` (refresh, nominal) |
+| **Cluster-Control-v5**      | 2026-04-25 | `46c86b6` (refresh, nominal) |
 
-> **Sauberkeits-Hinweis:** Mehrere Repos haben offene `chatgpt/...` Branches aus früheren Patches.
-> Empfehlung: nach nächstem Welle-3-Push diese Branches durchgehen und mergen oder löschen.
+> **Sauberkeits-Hinweis:** Mehrere Repos haben offene `chatgpt/...` Branches aus früheren Patches. Empfehlung: nach nächstem Welle-3-Push diese Branches durchgehen und mergen oder löschen.
 
 ## OpenClaw-Befehl zum Refresh dieser Datei
 
@@ -76,4 +77,4 @@ Committe mit: "docs(cross-repo): Status [DATUM] aktualisiert"
 
 ---
 
-*Stand: 2026-04-25 (Block A für RefactorCo durchgezogen) | Aktualisierung: nach jedem cluster-weiten Sprung in einer Welle.*
+*Stand: 2026-04-25 (cluster-weiter Bestandsdatei-Sync) | Aktualisierung: nach jedem cluster-weiten Sprung in einer Welle.*
