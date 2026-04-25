@@ -1,4 +1,4 @@
-> **Stand: 2026-04-25** | Master-Statusdatei für den gesamten v5-Cluster
+> **Stand: 2026-04-25 (nach Block A für RefactorCo)** | Master-Statusdatei für den gesamten v5-Cluster
 > Quelle der Wahrheit: GitHub-Repos auf `Project-Reloaded/*-v5` (main).
 > Aktualisierung: nach jeder produktiven Session, mindestens 1× pro Arbeitstag.
 
@@ -14,9 +14,9 @@ project-reloaded-cluster-v5, Cluster-Control-v5, Trading-Fabrik-v5,
 Social-Media-Fabrik-v5, Marketing-Fabrik-v5, Ebook-Fabrik-v5, RefactorCo-Fabrik-v5.
 ```
 
-**2. Wenn dieser Bericht da ist → das schwächste Repo zuerst:** Aktuell ist das `RefactorCo-Fabrik-v5` (alle Gates FAIL, Wave-1/2 noch nicht 80% grün).
+**2. Wenn dieser Bericht da ist → das schwächste Repo zuerst:** Aktuell ist das immer noch `RefactorCo-Fabrik-v5` (52 % gelb, Block B + C der Roadmap offen, Gates FAIL bis ≥ 80 % grün). Block A ist 2026-04-25 erledigt — nächste Etappe ist Block B (Welle 6 vorziehen).
 
-**3. Routine-Audit täglich:** `AUDIT1` aus `OPENCLAW_BEFEHLSKATALOG.md` ausführen — Netzwerk + VMs + Services in einem Durchgang.
+**3. Routine-Audit täglich:** `AUDIT1` aus `OPENCLAW_BEFEHLSKATALOG.md` ausführen — Netzwerk + VMs + Services in einem Durchgang. **Stand 2026-04-25:** 4/6 Geräte erreichbar (Pi-holes 10.6.7.x VLAN-isoliert), Proxmox-API-Token ist seit heute da (PVE-Zugang funktional, 12 VMs sichtbar), VM 100 selbst kerngesund.
 
 ---
 
@@ -30,7 +30,7 @@ Social-Media-Fabrik-v5, Marketing-Fabrik-v5, Ebook-Fabrik-v5, RefactorCo-Fabrik-
 | 4 | **Social-Media-Fabrik-v5** | **93 %** | yellow | 3.1 | `legacy_compare_ready: PASS`, `delta_wave_ready: FAIL`, `cross_repo_ready: FAIL` | 2026-04-16 |
 | 5 | **Marketing-Fabrik-v5** | n/a | yellow | 3.1 | `legacy_compare_ready: PASS`, `delta_wave_ready: FAIL`, `cross_repo_ready: FAIL` | 2026-04-16 |
 | 6 | **Ebook-Fabrik-v5** | **87 %** | green | 3.x | `legacy_compare_ready: PASS`, `delta_wave_ready: FAIL`, `cross_repo_ready: FAIL` | 2026-04-16 |
-| 7 | **RefactorCo-Fabrik-v5** | n/a | red | 1–2 | alle FAIL | 2026-04-16 |
+| 7 | **RefactorCo-Fabrik-v5** | **52 %** | yellow | 1-2 + Block B/C | alle FAIL | **2026-04-25** (Block A: `f21ecf3`) |
 
 **Cluster-weite Gates:**
 - `delta_wave_ready` : **FAIL** (überall — fehlende `INSTALL_SEQUENCE.md` + `docs/VM_SPEC.md` in allen Fabriken)
@@ -90,12 +90,12 @@ RefactorCo → Cluster-Control → Trading → Social-Media → Marketing → Eb
 4. Export-Qualitäts-Gate definieren
 5. Auf 100 % schließen → dann Trading-Fabrik aufholen
 
-### RefactorCo-Fabrik-v5  ⚠ Schwächstes Glied
-1. **ZUERST** `main` auf min. 80 % grün bringen (alle bisherigen P1-Lücken schließen)
-2. Welle-1-Truth-Bootstrap finalisieren
-3. Welle-2-Core-Kanonisierung abschließen
-4. `docs/operators/OPENCLAW_START_COMMAND.md` als Muster auf alle 6 anderen Repos ausrollen (CW2 im Befehlskatalog)
-5. Multi-Case-System A-G dokumentieren
+### RefactorCo-Fabrik-v5  ⚠ Schwächstes Glied (Block A am 2026-04-25 erledigt)
+1. **Block B starten** — Artefakt-Gegenprüfung aller Core-Dateien (Welle 6 vorziehen)
+2. `_ai/handoffs/HANDOFF_STAGE_GATE_AND_WAVE_MASTER.md` auf Block-A-erledigt aktualisieren
+3. Truth-Gaps + Park-Zonen in einem Sammeldokument konsistent markieren
+4. **Block C** — Reifegrad von 52 auf ≥ 80 % grün heben (Release-Candidate-Stand)
+5. Erst nach 80 % grün: Welle 3.2 (Legacy-Import) freigeben
 
 ---
 
@@ -107,15 +107,17 @@ RefactorCo → Cluster-Control → Trading → Social-Media → Marketing → Eb
 - [ ] **`docs/VM_SPEC.md`** — fehlt in **ALLEN 7 Repos** → blockt `delta_wave_ready`
 - [ ] **`CLUSTER_DEPS.md`** — fehlt in **ALLEN 7 Repos** → blockt `cross_repo_ready`
 - [ ] **`docs/operators/OPENCLAW_START_COMMAND.md`** — existiert NUR in RefactorCo-Fabrik-v5 → CW2 ausrollen
-- [ ] **`cluster-docs/08_Betrieb/CROSS_REPO_STATUS.md`** — wird im Befehlskatalog referenziert, existiert noch nicht
-- [ ] **Token-Rotation** — die im Cache liegenden GitHub-PATs sind als rotationsbedürftig markiert (Sicherheitsschuld)
+- [ ] **Pi-hole-Routing** — VLAN 10.6.7.x ist von 192.168.1.20 (VM 100) nicht erreichbar; Pi-holes laufen aber (laut PVE-API). OPNsense-Routing prüfen.
+- [ ] **Token-Rotation** — die im Cache liegenden GitHub-PATs sind als rotationsbedürftig markiert (Sicherheitsschuld); Telegram-Bot-Token war kurz im Chat (rotierbar via @BotFather)
+- [x] ~~**`cluster-docs/08_Betrieb/CROSS_REPO_STATUS.md`** — wird im Befehlskatalog referenziert, existiert noch nicht~~ → existiert seit 2026-04-25
+- [x] ~~**`PVE_USER` / `PVE_TOKEN_ID` / `PVE_TOKEN_SECRET`** in `credentials.env`~~ → erledigt 2026-04-25 (`openclaw@pve!cowork-2026-04-25`, PVEVMAdmin + PVEAuditor)
 
 ---
 
 ## Cluster-Architektur (Kurzform)
 
 ```
-GitHub-Org Project-Reloaded
+GitHub-User Project-Reloaded
 ├─ project-reloaded-cluster-v5    (Master / Integration / Dedupe)
 ├─ Cluster-Control-v5             (Meta-Steuerung / Governance / Observability)
 ├─ 5 Fachfabriken-v5
@@ -127,17 +129,21 @@ GitHub-Org Project-Reloaded
 ├─ cluster-docs                   (PUBLIC — diese Doku!)
 └─ openclaw-memory                (OpenClaw Wiki/Memory-Repo)
 
-Hardware:
-└─ Proxmox-Cluster (5 Nodes geplant)
-   ├─ Node-1: Infra (OpenClaw VM 100, OPNsense, DNS, TOR)
-   ├─ Node-2/3: Fachfabriken
-   ├─ Node-4: Trading-Sonderpfad (vm-106 = Live-Keys ONLY)
-   └─ Node-5: noch zu definieren
+Hardware (laut Proxmox-API, 2026-04-25):
+└─ Proxmox-Cluster auf Node-1-Network-Master (PVE 9.1.7), 12 VMs:
+   ├─ VM 100  openclaw                  (running, 75 % RAM)
+   ├─ VM 102  vm-102-OpnSense-Master    (running)
+   ├─ VM 104  vm-104-OpnSense-Slave     (running)
+   ├─ VM 106  vm-106-pi-hole-a          (running) ← isoliert ab VM 100
+   ├─ VM 107  pihole-b                  (running) ← isoliert ab VM 100
+   ├─ VM 110  ?                         (unknown, nicht installiert)
+   ├─ VM 200  ?                         (unknown)
+   └─ VM 300-305  vlan-test-VMs (5x)    (running, klein)
 ```
 
 **Steuerung:** OpenClaw Gateway auf VM 100 (192.168.1.20:18789) →
 4 MCP-Server (ssh-exec, github-wiki, proxmox-api, github-repos) →
-GitHub-Repos.
+GitHub-Repos. Telegram-Bot: [@OpenClaw_Vm_100_bot](https://t.me/OpenClaw_Vm_100_bot) (Whitelist nur Klaus).
 
 ---
 

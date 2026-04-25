@@ -1,6 +1,6 @@
 # CROSS_REPO_STATUS — Querschnitts-Tabelle aller v5-Repos
 
-> **Stand: 2026-04-25** | Pfad: `cluster-docs/08_Betrieb/CROSS_REPO_STATUS.md`
+> **Stand: 2026-04-25 (nach Block A für RefactorCo)** | Pfad: `cluster-docs/08_Betrieb/CROSS_REPO_STATUS.md`
 > Wird referenziert in `OPENCLAW_BEFEHLSKATALOG.md` Abschnitt "CW1 — Cross-Repo-Status aktualisieren".
 > Quelle: README.md + AGENTS.md jedes Repos auf `main`.
 
@@ -29,7 +29,7 @@
 | Social-Media-Fabrik-v5      | 3.1 | 93 % | yellow | Legacy-Vergleichs-Gap-Matrix |
 | Marketing-Fabrik-v5         | 3.1 | n/a | yellow | Legacy-Vergleichs-Gap-Matrix |
 | Ebook-Fabrik-v5             | 3.x | 87 % | green | Welle-3.1 Pflicht-Dateien (4 Stück) |
-| RefactorCo-Fabrik-v5        | 1–2 | n/a | red | `main` < 80 % grün |
+| **RefactorCo-Fabrik-v5**    | **1-2 + Block B/C** | **52 %** | **yellow** | Block B (Welle 6 vorziehen), dann Block C (auf 80 %/grün) |
 
 ## Gates pro Repo (alle drei P1-Gates)
 
@@ -43,16 +43,18 @@
 | Ebook-Fabrik-v5             | **PASS** | FAIL | FAIL |
 | RefactorCo-Fabrik-v5        | FAIL | FAIL | FAIL |
 
+> Hinweis RefactorCo: Gates bleiben FAIL bis `main` ≥ 80 / grün (laut Roadmap-Leitplanke). Der Sprung auf 52 % gelb ist kein Gate-Pass, nur die Sichtbarmachung des realen Stands.
+
 ## Letzter Push pro Repo (laut GitHub API, 2026-04-25)
 
 | Repo | letzter Commit auf `main` | Branches sonst |
 |------|---------------------------|----------------|
-| cluster-docs                | 2026-04-23 | + `Project-Reloaded-patch-1` |
+| cluster-docs                | 2026-04-25 (laufende Aktualisierung) | + `Project-Reloaded-patch-1` |
+| **RefactorCo-Fabrik-v5**    | **2026-04-25** (Block A: `f21ecf3`) | + 3 chatgpt/Project-Reloaded-patch Branches |
 | project-reloaded-cluster-v5 | 2026-04-16 | + `bootstrap-test`, `chatgpt-test-tree` |
 | Cluster-Control-v5          | 2026-04-16 | + `chatgpt/cluster-control-readme-naechster-start-fix` |
 | Ebook-Fabrik-v5             | 2026-04-16 | + `chatgpt/ebook-readme-naechster-start-fix` |
 | Marketing-Fabrik-v5         | 2026-04-16 | (nur main) |
-| RefactorCo-Fabrik-v5        | 2026-04-16 | + 3 chatgpt/Project-Reloaded-patch Branches |
 | Social-Media-Fabrik-v5      | 2026-04-16 | + 2 chatgpt + 1 wave1-Branch |
 | Trading-Fabrik-v5           | 2026-04-16 | + 4 chatgpt/wave/tree-test Branches |
 
@@ -74,4 +76,4 @@ Committe mit: "docs(cross-repo): Status [DATUM] aktualisiert"
 
 ---
 
-*Stand: 2026-04-25 | Aktualisierung: nach jedem cluster-weiten Sprung in einer Welle.*
+*Stand: 2026-04-25 (Block A für RefactorCo durchgezogen) | Aktualisierung: nach jedem cluster-weiten Sprung in einer Welle.*
