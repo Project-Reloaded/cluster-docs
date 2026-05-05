@@ -374,6 +374,14 @@ du -sh ~/.openclaw/workspace/
 | OpenClaw-Update | Nach Bedarf | Klaus |
 | Firewall-Rules-Review | Monatlich | Klaus |
 
+### GitHub-gepflegte Zusatztools
+
+| Tool | Status | Quelle | Primaerer Einsatzort | Kanonischer Verweis | Update-Check |
+|---|---|---|---|---|---|
+| RepoLens | trial | `TheMorpheus407/RepoLens` | `vm-303` in `RefactorCo-Fabrik-v5`, optional `vm-305` fuer Smoke-Audits | `RefactorCo-Fabrik-v5/docs/operators/REPOLENS_INTEGRATION.md` | Pflicht, woechentlich |
+
+**Hinweis:** RepoLens ist als externes Review- und Audit-Werkzeug eingeplant. Es ersetzt keine repo-first-Wahrheitspruefung und keine manuelle Freigabe fuer groessere Architekturentscheidungen.
+
 ---
 
 ## 8. Sicherheit & Backup
