@@ -1,21 +1,21 @@
 # MODEL_ACCESS_IMPLEMENTATION_GUIDE
 
-> **Wichtiger Hinweis:** Diese Datei ist **Doku-Vorbereitung**, **keine Live-Installation jetzt**. Die Implementation erfolgt **erst nach Fertigstellung aller 7 v5-Fabriken**. Bis dahin werden **keine API-Keys beschafft**, **kein Setup ausgefuehrt**, **keine Tests gefahren** und **keine Agenten-Migration** gestartet. Der Guide ist **fertig zur Aktivierung**, aber **nicht zur sofortigen Ausfuehrung**.
+> **Stand 2026-05-08:** `vm-110-model-gateway` ist **LIVE-IDLE** auf `10.6.7.20` (**Debian 13 LXC**). Installiert: **LiteLLM 1.83.14** mit 6 Modellen (`claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5`, `gpt-4o`, `gpt-4o-mini`, `minimax-text-01`), `systemd`-Unit `litellm.service` = **active**, Health = **200 OK**. API-Keys bleiben **deferred bis Klaus GO Live**. Container-Netz: **Bridge `vmbr2`, Tag `17`**, **nicht VLAN 7**. SSH-Key `openclaw@proxmox-infra` liegt in `authorized_keys`. Env-Template liegt unter `/etc/litellm/litellm.env.template` mit Platzhaltern fuer `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MINIMAX_API_KEY`.
 
-**Status:** PLANUNG — fertig zur spaeteren Aktivierung  
-**Stand:** 2026-05-07
+**Status:** LIVE-IDLE — vorbereitet, aber noch nicht fuer Live-Providerbetrieb aktiviert  
+**Stand:** 2026-05-08
 
 ## A) Zweck
 Dieses Dokument ist die **Implementation-Vorbereitung** fuer das LiteLLM-Gateway aus:
 - `09_Architektur/MODEL_ACCESS_ARCHITECTURE.md`
 
-Es beschreibt die praktische Startanleitung so weit vor, dass **Klaus** die technische Umsetzung spaeter gezielt starten kann, **wenn alle 7 v5-Fabriken fertig gebaut sind und die Live-Phase explizit freigegeben wird**.
+Es beschreibt den cluster-weiten Zielpfad fuer den Modellzugriff und dokumentiert zugleich den aktuellen **Idle-Live-Basisstand** auf `vm-110-model-gateway`.
 
 Wichtig:
-- Dieses Dokument ist **keine** Rueckmeldung "bereits implementiert"
-- Dieses Dokument ist **keine** Aufforderung zum sofortigen Setup
-- Fehlende Zugangsdaten oder Betreiberentscheidungen werden **nicht erfunden**
-- Alles, was Klaus spaeter selbst liefern oder freigeben muss, ist unten klar markiert
+- Die Basis-VM und der Gateway-Stack sind **vorinstalliert und idle erreichbar**
+- Dieses Dokument ist **keine** Aussage, dass Live-Providerbetrieb schon freigeschaltet ist
+- API-Keys bleiben bis zur ausdruecklichen Live-Freigabe durch Klaus **absichtlich ausstehend**
+- Keine Agenten-Migration, keine Provider-Tests und keine Live-Schaltung ohne ausdrueckliches GO
 
 ## B) VM-Wahl: dedizierte Service-VM `vm-110-model-gateway`
 
@@ -35,6 +35,7 @@ Empfohlen wird eine **dedizierte cluster-weite Service-VM**:
 - **Node:** `Node-1`
 - **Slot-Lage:** zwischen `vm-108` (Tor) und `vm-200`
 - **Service-IP:** `10.6.7.20`
+- **Netz:** `vmbr2`, VLAN-Tag `17` (`10.6.7.x` / `VMs_DMZ`)
 
 Diese Wahl schafft:
 - saubere Trennung zwischen OpenClaw-Laufzeit und Model-Gateway
@@ -44,6 +45,16 @@ Diese Wahl schafft:
 - Platzierung im **Service-VLAN `10.6.7.x` hinter OPNsense** statt im flacheren `192.168.1.x`-Bereich ohne vorgeschaltete Firewall
 
 ## C) VM-Spezifikation `vm-110-model-gateway`
+
+### Ist-Stand 2026-05-08
+- **Typ:** Debian 13 LXC
+- **IP:** `10.6.7.20`
+- **LiteLLM:** `1.83.14`
+- **Service:** `litellm.service` = `active`
+- **Health:** `200 OK`
+- **SSH-Zugang:** `openclaw@proxmox-infra` in `authorized_keys`
+- **Env-Template:** `/etc/litellm/litellm.env.template`
+- **API-Keys:** bewusst **nicht** gesetzt
 
 ### Aufgaben
 Die VM uebernimmt folgende Aufgaben:
@@ -72,11 +83,19 @@ Zulaessige Basis:
 ### Sicherheitsvorgaben
 - LiteLLM **bindet ausschliesslich auf Loopback**
 - **TLS endet in nginx**
-- API-Keys liegen in `/root/.litellm/keys.env`
-- Rechte auf `keys.env`: **`chmod 600`**
+- API-Keys liegen spaeter in `/etc/litellm/litellm.env` auf Basis des Templates `/etc/litellm/litellm.env.template`
+- Rechte auf Env-Dateien: **`chmod 600`**
 - **Rate-Limiting** und **Owner-Allowlist** werden in der LiteLLM-Konfiguration erzwungen
 - **Doctor-Health-Probe** erfolgt von OpenClaw aus
 - **kein direktes externes Lauschen** des LiteLLM-Backends
+
+### Installierte Modell-Slots (Idle-Basis)
+- `claude-opus-4-6`
+- `claude-sonnet-4-6`
+- `claude-haiku-4-5`
+- `gpt-4o`
+- `gpt-4o-mini`
+- `minimax-text-01`
 
 ### Phase C (spaeter)
 In einer spaeteren Ausbauphase kann zusaetzlich eine **separate `vm-vLLM`-VM mit GPU-Passthrough** entstehen.
@@ -94,110 +113,37 @@ Pro Backend wird **genau ein eigener API-Key** vorgesehen.
 
 ### Ablage-Doktrin
 Empfohlene Ablage auf dem Zielhost:
-- `/root/.litellm/keys.env`
+- `/etc/litellm/litellm.env`
+- Vorlage: `/etc/litellm/litellm.env.template`
 
 Regeln:
 - **kein Klartext im Repo**
 - keine API-Keys in Markdown, YAML oder Git-Commits
 - Rotation als Doktrin **alle 90 Tage**
 - an die bestehende **Cluster-Secret-Konvention** anschliessen
+- Live-Befuellung erst nach ausdruecklichem **Klaus GO Live**
 
-### Beispiel fuer `keys.env`
+### Beispiel fuer `litellm.env.template`
 ```bash
-OPENAI_API_KEY=...
-ANTHROPIC_API_KEY=...
-MINIMAX_API_KEY=...
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
+MINIMAX_API_KEY=
 ```
 
 ## E) Setup-Skript-Vorlage
+Die Basiskomponenten sind auf `vm-110` bereits im **Idle-Live-Stand** vorhanden. Das folgende Schema bleibt als reproduzierbare Referenz fuer Neuaufbau oder Re-Setup erhalten.
+
 ```bash
 set -euo pipefail
 
 apt-get update
-apt-get install -y python3 python3-venv python3-pip curl
+apt-get install -y python3 python3-venv python3-pip curl nginx
 
 mkdir -p /opt/litellm
-mkdir -p /root/.litellm
+mkdir -p /etc/litellm
 python3 -m venv /opt/litellm/.venv
 /opt/litellm/.venv/bin/pip install --upgrade pip
-/opt/litellm/.venv/bin/pip install litellm
-
-cat > /root/.litellm/config.yaml <<'YAML'
-model_list:
-  - model_name: gpt-4o
-    litellm_params:
-      model: openai/gpt-4o
-      api_key: os.environ/OPENAI_API_KEY
-  - model_name: gpt-5
-    litellm_params:
-      model: openai/gpt-5
-      api_key: os.environ/OPENAI_API_KEY
-  - model_name: o1
-    litellm_params:
-      model: openai/o1
-      api_key: os.environ/OPENAI_API_KEY
-  - model_name: claude-sonnet-4
-    litellm_params:
-      model: anthropic/claude-sonnet-4
-      api_key: os.environ/ANTHROPIC_API_KEY
-  - model_name: minimax-text
-    litellm_params:
-      model: minimax/text-01
-      api_key: os.environ/MINIMAX_API_KEY
-
-router_settings:
-  routing_strategy: simple-shuffle
-
-model_groups:
-  reasoning:
-    models:
-      - gpt-5
-      - gpt-4o
-      - o1
-    fallback_models:
-      - claude-sonnet-4
-  code_review:
-    models:
-      - claude-sonnet-4
-      - gpt-5
-    fallback_models:
-      - gpt-4o
-  bulk:
-    models:
-      - minimax-text
-      - gpt-4o
-    fallback_models:
-      - claude-sonnet-4
-
-litellm_settings:
-  drop_params: true
-  set_verbose: false
-
-general_settings:
-  master_key: change-me-later
-YAML
-
-cat > /etc/systemd/system/litellm.service <<'UNIT'
-[Unit]
-Description=LiteLLM Gateway
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-WorkingDirectory=/opt/litellm
-EnvironmentFile=/root/.litellm/keys.env
-ExecStart=/opt/litellm/.venv/bin/litellm --config /root/.litellm/config.yaml --port 4000 --host 127.0.0.1
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-UNIT
-
-systemctl daemon-reload
-systemctl enable --now litellm.service
-systemctl status litellm.service --no-pager
+/opt/litellm/.venv/bin/pip install litellm==1.83.14
 ```
 
 ## F) `config.yaml`-Template-Logik
@@ -205,85 +151,52 @@ Die spaetere Aktivierungs-Konfiguration soll mindestens diese Punkte abdecken:
 
 ### `model_list`
 Drei Backend-Klassen:
-- OpenAI fuer `gpt-5`, `gpt-4o`, `o1`
-- Anthropic fuer `claude-sonnet-4`
-- MiniMax fuer Bulk-/Kostenpfade
-
-### `model_groups` / Routing-Policies
-Beispielhafte Gruppen:
-- `reasoning` -> `gpt-5`, `gpt-4o`, `o1`
-- `code_review` -> `claude-sonnet-4`, dann `gpt-5`
-- `bulk` -> `minimax-text`, dann `gpt-4o`
+- OpenAI fuer `gpt-4o`, `gpt-4o-mini`
+- Anthropic fuer `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5`
+- MiniMax fuer `minimax-text-01`
 
 ### Weitere Pflichtfelder fuer die Aktivierung
 Diese Felder sollen in der realen Konfiguration bewusst gesetzt werden:
 - `per_model_max_tokens`
 - `rate_limit_per_minute`
 - `fallback_chain`
+- `owner_allowlist`
 
 Diese Werte sind **betreiberseitig zu setzen** und werden hier nicht erfunden.
 Sie muessen von Klaus anhand Budget, Provider-Limits und gewuenschter Lastgrenze eingetragen werden.
 
-## G) Aktivierungs-Schritte (NICHT jetzt, erst nach Fabrik-Aufbau)
+## G) Aktivierungs-Schritte (erst nach Klaus GO Live)
 Die folgenden Schritte sind **nur dann auszufuehren**, wenn:
 - **alle 7 Fabriken fertig gebaut sind**
 - und **Klaus die Live-Phase explizit startet**
 
-1. **API-Keys beschaffen**
-   - erst dann `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` und `MINIMAX_API_KEY` real anlegen
-2. **VM-Slot bestaetigen**
-   - `vm-110-model-gateway` auf Node-1 final freigeben
-3. **Setup-Skript ausfuehren**
-   - LiteLLM, Config, Service und nginx auf der Ziel-VM einrichten
-4. **Tests fahren**
-   - lokale Backend- und Health-Checks gegen die reale Installation ausfuehren
+1. **API-Keys eintragen**
+   - `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MINIMAX_API_KEY` in `/etc/litellm/litellm.env` befuellen
+2. **Owner-/Rate-/Budget-Policy finalisieren**
+   - produktive Limits und Allowlists scharf schalten
+3. **nginx- und Zertifikatspfad final pruefen**
+   - Wildcard-/HAProxy-Pfad gegen den Cluster-Frontend-Stand verifizieren
+4. **Provider-Health und Modellpfade testen**
+   - echte Backend-Checks gegen die Live-Konfiguration ausfuehren
 5. **Migration starten**
    - erste Agenten kontrolliert auf den Gateway-Pfad umstellen
 
 ## H) Aktivierungs-Tests (erst in der Live-Phase)
-Nach Start des Services sollen lokale HTTP-Tests gegen **jedes Backend** laufen.
+Nach Befuellung der API-Keys sollen lokale HTTP-Tests gegen **jedes Backend** laufen.
 
 ### Testziel
 - Endpoint: `http://127.0.0.1:4000/v1/chat/completions`
 - Erwartung: **HTTP 200** plus **JSON-Response**
 
-### Beispieltests
-```bash
-curl -s http://127.0.0.1:4000/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role":"user","content":"Sag nur: ok"}]
-  }'
-```
-
-```bash
-curl -s http://127.0.0.1:4000/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model": "claude-sonnet-4",
-    "messages": [{"role":"user","content":"Sag nur: ok"}]
-  }'
-```
-
-```bash
-curl -s http://127.0.0.1:4000/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model": "minimax-text",
-    "messages": [{"role":"user","content":"Sag nur: ok"}]
-  }'
-```
-
-Zusatz fuer die Live-Phase:
-- `/health` muss gruen antworten
-- `/readyz` muss gruen antworten
+### Idle-Health-Ziele (bereits relevant)
+- `/health` muss **200 OK** liefern
+- `/readyz` muss **200 OK** liefern
 - OpenClaw-Doctor/Audit muss die Ziel-VM sauber sehen
 
 ## I) Status
-- **Status:** PLANUNG
-- **Stand:** 2026-05-07
-- **Reife:** fertig zur Aktivierung, aber bewusst **nicht jetzt** zur Ausfuehrung bestimmt
+- **Status:** LIVE-IDLE
+- **Stand:** 2026-05-08
+- **Reife:** Basis laeuft, aber bewusst **ohne API-Keys und ohne Live-Migration**
 
 ## Verweise
 - `09_Architektur/MODEL_ACCESS_ARCHITECTURE.md`

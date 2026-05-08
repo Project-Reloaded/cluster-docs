@@ -1,7 +1,7 @@
 # KNOWLEDGE_CONTINUITY_LAYER
 
-**Status:** PLANUNG — noch nicht implementiert  
-**Stand:** 2026-05-07
+**Status:** PHASE 1 TEILWEISE LIVE-IDLE — Repo-Auth und Frontend noch offen  
+**Stand:** 2026-05-08
 
 ## A) Zweck
 Dieses Dokument beschreibt den **cluster-weiten Knowledge-Continuity-Layer** fuer alle 7 v5-Fabriken plus `cluster-docs`.
@@ -79,7 +79,25 @@ Ziel:
 - ein Fabrik-Repo kann auf kanonische Cluster- oder Schwester-Doku verweisen
 - der rote Faden wird nicht an Repo-Grenzen zerschnitten
 
-## D) Sicht- und Bedien-Schicht (PWA)
+## D) Tagebuch-Doktrin
+### Klaus-Definition
+`vm-112` ist das **Arbeitsgedaechtnis fuer OpenClaw plus Klaus**.
+Dafuer werden alle **8 Repos** in einen gemeinsamen Wissensraum eingebunden:
+- `cluster-docs`
+- die 7 v5-Fabriken
+
+Pro Fabrik gehoeren dort mindestens hinein:
+- **Tagebuch**
+- **Workflow**
+- **Roadmap**
+- **Befehle**
+
+Arbeitsregel:
+- OpenClaw schaut auf `vm-112` nach, **wenn etwas im laufenden Repo nicht klar genug ist**
+- Repo-first bleibt erhalten, aber `vm-112` ist der zentrale Rueckraum fuer Verlauf, Kontext und Wiedereinstieg
+- das Tagebuch ist damit **keine Parallel-Wahrheit**, sondern ein operatives Arbeitsgedaechtnis
+
+## E) Sicht- und Bedien-Schicht (PWA)
 Ergaenzend zur Repo-/Wiki-/Vault-Schicht soll pro Fabrik eine **Steuerungs-PWA** entstehen.
 
 Fachliche Leitlinie:
@@ -102,7 +120,30 @@ Rolle der PWA:
 - keine Wahrheitsersatz-Schicht
 - kein Ersatz fuer Repo, Review, Testbed oder Freigabe
 
-## E) Phasen-Plan
+## F) vm-112 Phase 1 — Stand 2026-05-08
+### Ist-Stand
+- **VM:** `vm-112-knowledge-portal`
+- **IP:** `10.6.7.22`
+- **Basis:** Debian 13 LXC
+- **Laufzeit:** Node.js 22, nginx, Quartz v4
+- **CLI-Helfer:** `ripgrep`, `fzf`, `bat`, `restic`
+- **Timer aktiv:** `sync-repos.timer`, `quartz-build.timer`, `healthcheck.timer`
+- **Tagebuch-Skelette:** 7 Fabrik-Skelette unter `/srv/knowledge/tagebuch`
+- **Repo-Zielpfad:** `/srv/knowledge/repos` = **deferred bis Auth**
+- **Health:** `/health` liefert JSON
+- **Raw-Sicht:** `/raw/` mit Autoindex auf `/srv/knowledge`
+
+### Bewusste Grenzen
+- **AnythingLLM / RAG-Layer** bleibt vorerst **deferred**
+- Grund: **Node-1-Leichtgewichts-Doktrin**
+- `vm-112` hat nur **2 GB RAM**
+- Power-Komponenten gehoeren auf **andere Nodes**, nicht in diese leichte Wissens-VM
+
+### Klaus-Decisions offen
+- **B3:** Repo-Auth via **PAT oder Deploy-Key**
+- **B4:** HAProxy-Frontend `wiki.project-reloaded.org -> vm-112:80`
+
+## G) Phasen-Plan
 ### Phase A — Session-Persistence
 - `_ai/openclaw/sessions/` in alle 7 v5-Repos bringen
 - cluster-weite `BOOTSTRAP.md`-Muster angleichen
@@ -119,7 +160,7 @@ Rolle der PWA:
 - gemeinsame Sicht-/Statuskarten angleichen
 - mobile Bedienmuster vereinheitlichen
 
-## F) Verbindung zu `MODEL_ACCESS_ARCHITECTURE.md`
+## H) Verbindung zu `MODEL_ACCESS_ARCHITECTURE.md`
 Der Knowledge-Continuity-Layer und die Modell-Zugriffs-Architektur ergaenzen sich, loesen aber **verschiedene Probleme**:
 
 - `MODEL_ACCESS_ARCHITECTURE.md` regelt, **wie** Agenten und VMs technisch auf Modelle zugreifen
@@ -132,17 +173,15 @@ Gemeinsame Leitidee:
 
 Beide Dokumente gehoeren daher zusammen in die cluster-weite Architektur-Doktrin.
 
-## G) Grenzen
-Dieses Dokument ist eine **Doktrin- und Architekturvorgabe**, keine bestaetigte Vollimplementierung.
+## I) Grenzen
+Dieses Dokument ist eine **Doktrin- und Architekturvorgabe** mit einem teilweise bereits laufenden **Phase-1-Basisstand**, aber noch **keine** vollstaendig ausgerollte Cluster-Implementierung.
 
-Noch nicht belegt als cluster-weit produktiv:
-- gemeinsamer Obsidian-Vault fuer alle 7 v5-Repos
-- Quartz-Hosting als laufende Wiki-Schicht
-- automatischer obsidian-wiki- oder GitHub-Wiki-Sync
+Noch offen bzw. nicht fertig belegt als cluster-weit produktiv:
+- Repo-Auth fuer alle 8 Repos auf `vm-112`
+- kompletter Pull aller Repos nach `/srv/knowledge/repos`
+- HAProxy-Frontend auf `wiki.project-reloaded.org`
+- AnythingLLM-/RAG-Layer
 - PWA-Portierung in alle Fabriken
 
-## H) Status
-**PLANUNG — noch nicht implementiert.**
-
-Dieses Dokument beschreibt den Zielzustand fuer den cluster-weiten roten Faden.
-Die operative Einfuehrung erfolgt schrittweise ueber Session-Persistence, Wiki-/Vault-Schicht und spaetere PWA-Sichtmodelle.
+## J) Status
+**PHASE 1 TEILWEISE LIVE-IDLE — Basis laeuft, Vollausbau noch offen.**

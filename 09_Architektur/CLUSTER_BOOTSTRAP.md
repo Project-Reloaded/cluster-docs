@@ -44,7 +44,23 @@ Zweck dieser Reihenfolge:
 - dann Rollen-/Agentenrahmen,
 - dann Readiness-/Gate-Lage.
 
-## D) Pro-Fabrik-BOOTSTRAP.md als TODO
+## D) VM-Uebersicht (Node-1 Leichtgewichte)
+### Live-Idle-Bausteine 2026-05-08
+- **vm-110-model-gateway** — **Node-1**, `10.6.7.20:4000`, LiteLLM, **idle-live**
+- **vm-112-knowledge-portal** — **Node-1**, `10.6.7.22:80`, Quartz-Knowledge-Portal, **idle-live**
+
+### Netz-Hinweis
+Fuer die `10.6.7.x`-Service-VMs gilt:
+- **Bridge:** `vmbr2`
+- **Tag:** `17`
+- Segment: `VMs_DMZ`
+
+### Doktrin-Hinweis
+- **vm-1XX = Node-1 Leichtgewichte**
+- Power-Komponenten gehoeren auf **andere Nodes**
+- `vm-112` kann spaeter migrieren, wenn Knowledge-/RAG-/Frontend-Last ueber den Leichtgewichtsrahmen hinausgeht
+
+## E) Pro-Fabrik-BOOTSTRAP.md als TODO
 Naechster Ausbaupunkt ist eine **eigene `_ai/openclaw/BOOTSTRAP.md` in jedem der 7 v5-Repos**.
 
 Diese Dateien sollen basieren auf:
@@ -56,9 +72,9 @@ Ziel:
 - jede Fabrik bekommt einen eigenen kanonischen Session-Einstieg,
 - aber alle folgen derselben cluster-weiten Bootstrap-Doktrin.
 
-## E) Status
-- **Status:** PLANUNG
-- **Stand:** 2026-05-07
+## F) Status
+- **Status:** DOKTRIN AKTIV, Teile bereits live-idle
+- **Stand:** 2026-05-08
 
 Wichtig:
 Dieses Dokument ist **sofort gueltig als Doktrin**, auch wenn die Pro-Fabrik-`BOOTSTRAP.md`-Dateien noch nicht in allen Repos ausgerollt sind.
