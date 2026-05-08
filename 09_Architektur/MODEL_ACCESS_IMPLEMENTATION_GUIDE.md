@@ -1,50 +1,88 @@
 # MODEL_ACCESS_IMPLEMENTATION_GUIDE
 
-**Status:** PLANUNG — fertig zur Ausfuehrung  
+> **Wichtiger Hinweis:** Diese Datei ist **Doku-Vorbereitung**, **keine Live-Installation jetzt**. Die Implementation erfolgt **erst nach Fertigstellung aller 7 v5-Fabriken**. Bis dahin werden **keine API-Keys beschafft**, **kein Setup ausgefuehrt**, **keine Tests gefahren** und **keine Agenten-Migration** gestartet. Der Guide ist **fertig zur Aktivierung**, aber **nicht zur sofortigen Ausfuehrung**.
+
+**Status:** PLANUNG — fertig zur spaeteren Aktivierung  
 **Stand:** 2026-05-07
 
 ## A) Zweck
 Dieses Dokument ist die **Implementation-Vorbereitung** fuer das LiteLLM-Gateway aus:
 - `09_Architektur/MODEL_ACCESS_ARCHITECTURE.md`
 
-Es beschreibt die praktische Startanleitung so weit vor, dass **Klaus** die technische Umsetzung auf `vm-100` oder einer spaeteren `vm-308` nur noch starten muss.
+Es beschreibt die praktische Startanleitung so weit vor, dass **Klaus** die technische Umsetzung spaeter gezielt starten kann, **wenn alle 7 v5-Fabriken fertig gebaut sind und die Live-Phase explizit freigegeben wird**.
 
 Wichtig:
 - Dieses Dokument ist **keine** Rueckmeldung "bereits implementiert"
+- Dieses Dokument ist **keine** Aufforderung zum sofortigen Setup
 - Fehlende Zugangsdaten oder Betreiberentscheidungen werden **nicht erfunden**
-- Alles, was Klaus selbst liefern muss, ist unten klar markiert
+- Alles, was Klaus spaeter selbst liefern oder freigeben muss, ist unten klar markiert
 
-## B) VM-Wahl: `vm-100` vs. neue `vm-308`
+## B) VM-Wahl: dedizierte Service-VM `vm-110-model-gateway`
 
-### Variante 1 — `vm-100`
-**Vorteile**
-- bereits vorhanden
-- OpenClaw-Naehe vereinfacht Phase A
-- keine neue VM-Bereitstellung noetig
-- schnelle Inbetriebnahme fuer den ersten Routing-Pfad
+### Warum `vm-100` ausscheidet
+- `vm-100` ist die **OpenClaw-Steuerungs-VM**
+- eine zusaetzliche Gateway-Rolle dort wuerde **Betriebsrollen vermischen**
+- fuer cluster-weite Modellsteuerung ist eine **saubere Trennung** vorzuziehen
 
-**Nachteile**
-- Gateway und OpenClaw teilen sich denselben Host
-- Betriebsrollen sind weniger sauber getrennt
-- spaetere Last, Logs und Policies liegen enger auf derselben Maschine
-
-### Variante 2 — neue `vm-308`
-**Vorteile**
-- saubere Trennung zwischen OpenClaw-Laufzeit und Model-Gateway
-- klarere Betriebs-, Upgrade- und Fehlergrenzen
-- bessere Ausgangslage fuer spaetere Laststeigerung
-
-**Nachteile**
-- neue VM muss zuerst bereitgestellt werden
-- mehr Initialaufwand fuer Netz, Service und Pflege
-- Phase A dauert laenger bis zum ersten produktiven Test
+### Warum `vm-308` ausscheidet
+- `vm-308` ist der **RefactorCo-Slot auf Node-3**
+- diese VM ist **nicht cluster-weit neutral**, sondern bereits fachlich vorgepraegt
+- sie ist daher **kein sauberer Zielort** fuer einen zentralen Shared-Service
 
 ### Empfehlung
-- **Phase A:** auf `vm-100` mit LiteLLM auf **Port 4000**
-- **OpenClaw bleibt** parallel auf `127.0.0.1:18789`
-- **Phase B:** Migration auf `vm-308`, sobald Last, Routing-Komplexitaet oder Trennungsbedarf steigen
+Empfohlen wird eine **dedizierte cluster-weite Service-VM**:
+- **Name:** `vm-110-model-gateway`
+- **Node:** `Node-1`
+- **Slot-Lage:** zwischen `vm-108` (Tor) und `vm-200`
 
-## C) API-Key-Schema
+Diese Wahl schafft:
+- saubere Trennung zwischen OpenClaw-Laufzeit und Model-Gateway
+- cluster-weite Neutralitaet statt Fabrik-Sonderrolle
+- klarere Betriebs-, Upgrade- und Fehlergrenzen
+- bessere Grundlage fuer spaeteres Routing, Logging, Limits und Kostensteuerung
+
+## C) VM-Spezifikation `vm-110-model-gateway`
+
+### Aufgaben
+Die VM uebernimmt folgende Aufgaben:
+1. **LiteLLM-Server** auf `127.0.0.1:4000` als reiner Loopback-Dienst
+2. **Multi-Backend-Routing** fuer OpenAI, Anthropic und MiniMax
+3. **Per-Agent-Auth-Tokens** fuer getrennte Zugriffe je Agent/Rolle
+4. **Rate-Limiting** pro Agent und pro Backend
+5. **Cost-Tracking** als `Tokens × Preis`, aggregiert pro Tag / Agent / Backend, mit JSON-Reports an Dashboard `vm-302`
+6. **Request-Logging nur meta-only**, also ohne Klartext-Inhalte der Prompts/Antworten
+7. **Health-Endpunkte** `/health` und `/readyz` fuer Doctor-/Audit-Pruefungen
+8. **nginx davor auf Port 443** mit Wildcard-Zertifikat analog zum OpenClaw-Setup
+9. **Optionaler Redis-Cache** fuer wiederholte Anfragen
+
+### Sizing
+Direkt produktiv auslegen:
+- **CPU:** `2-4 vCPU`
+- **RAM:** `4 GB`
+- **Disk:** `20 GB`
+
+### Betriebssystem
+Zulaessige Basis:
+- **Debian 12**
+- **Ubuntu 22.04 LTS**
+- **Ubuntu 24.04 LTS**
+
+### Sicherheitsvorgaben
+- LiteLLM **bindet ausschliesslich auf Loopback**
+- **TLS endet in nginx**
+- API-Keys liegen in `/root/.litellm/keys.env`
+- Rechte auf `keys.env`: **`chmod 600`**
+- **Rate-Limiting** und **Owner-Allowlist** werden in der LiteLLM-Konfiguration erzwungen
+- **Doctor-Health-Probe** erfolgt von OpenClaw aus
+- **kein direktes externes Lauschen** des LiteLLM-Backends
+
+### Phase C (spaeter)
+In einer spaeteren Ausbauphase kann zusaetzlich eine **separate `vm-vLLM`-VM mit GPU-Passthrough** entstehen.
+Dann routet `vm-110-model-gateway` teilweise:
+- zu **lokalen Modellen** auf der GPU-VM
+- und teilweise weiter zu **externen Providern**
+
+## D) API-Key-Schema
 Pro Backend wird **genau ein eigener API-Key** vorgesehen.
 
 ### Zu beschaffende Keys
@@ -69,7 +107,7 @@ ANTHROPIC_API_KEY=...
 MINIMAX_API_KEY=...
 ```
 
-## D) Setup-Skript-Vorlage
+## E) Setup-Skript-Vorlage
 ```bash
 set -euo pipefail
 
@@ -160,8 +198,8 @@ systemctl enable --now litellm.service
 systemctl status litellm.service --no-pager
 ```
 
-## E) `config.yaml`-Template-Logik
-Die Phase-A-Konfiguration soll mindestens diese Punkte abdecken:
+## F) `config.yaml`-Template-Logik
+Die spaetere Aktivierungs-Konfiguration soll mindestens diese Punkte abdecken:
 
 ### `model_list`
 Drei Backend-Klassen:
@@ -175,7 +213,7 @@ Beispielhafte Gruppen:
 - `code_review` -> `claude-sonnet-4`, dann `gpt-5`
 - `bulk` -> `minimax-text`, dann `gpt-4o`
 
-### Weitere Pflichtfelder fuer Phase A
+### Weitere Pflichtfelder fuer die Aktivierung
 Diese Felder sollen in der realen Konfiguration bewusst gesetzt werden:
 - `per_model_max_tokens`
 - `rate_limit_per_minute`
@@ -184,7 +222,23 @@ Diese Felder sollen in der realen Konfiguration bewusst gesetzt werden:
 Diese Werte sind **betreiberseitig zu setzen** und werden hier nicht erfunden.
 Sie muessen von Klaus anhand Budget, Provider-Limits und gewuenschter Lastgrenze eingetragen werden.
 
-## F) Test-Plan
+## G) Aktivierungs-Schritte (NICHT jetzt, erst nach Fabrik-Aufbau)
+Die folgenden Schritte sind **nur dann auszufuehren**, wenn:
+- **alle 7 Fabriken fertig gebaut sind**
+- und **Klaus die Live-Phase explizit startet**
+
+1. **API-Keys beschaffen**
+   - erst dann `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` und `MINIMAX_API_KEY` real anlegen
+2. **VM-Slot bestaetigen**
+   - `vm-110-model-gateway` auf Node-1 final freigeben
+3. **Setup-Skript ausfuehren**
+   - LiteLLM, Config, Service und nginx auf der Ziel-VM einrichten
+4. **Tests fahren**
+   - lokale Backend- und Health-Checks gegen die reale Installation ausfuehren
+5. **Migration starten**
+   - erste Agenten kontrolliert auf den Gateway-Pfad umstellen
+
+## H) Aktivierungs-Tests (erst in der Live-Phase)
 Nach Start des Services sollen lokale HTTP-Tests gegen **jedes Backend** laufen.
 
 ### Testziel
@@ -219,17 +273,15 @@ curl -s http://127.0.0.1:4000/v1/chat/completions \
   }'
 ```
 
-## G) Klaus-Aktionen kompakt
-1. drei API-Keys beschaffen
-2. zwischen `vm-100` und `vm-308` entscheiden
-3. Setup-Skript-Block ausfuehren
-4. lokale Backend-Tests laufen lassen
-5. erste Agenten-Migration auf den Gateway-Pfad starten
+Zusatz fuer die Live-Phase:
+- `/health` muss gruen antworten
+- `/readyz` muss gruen antworten
+- OpenClaw-Doctor/Audit muss die Ziel-VM sauber sehen
 
-## H) Status
+## I) Status
 - **Status:** PLANUNG
 - **Stand:** 2026-05-07
-- **Reife:** fertig zur Ausfuehrungsvorbereitung, aber noch nicht live implementiert
+- **Reife:** fertig zur Aktivierung, aber bewusst **nicht jetzt** zur Ausfuehrung bestimmt
 
 ## Verweise
 - `09_Architektur/MODEL_ACCESS_ARCHITECTURE.md`
