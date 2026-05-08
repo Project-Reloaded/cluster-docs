@@ -34,12 +34,14 @@ Empfohlen wird eine **dedizierte cluster-weite Service-VM**:
 - **Name:** `vm-110-model-gateway`
 - **Node:** `Node-1`
 - **Slot-Lage:** zwischen `vm-108` (Tor) und `vm-200`
+- **Service-IP:** `10.6.7.20`
 
 Diese Wahl schafft:
 - saubere Trennung zwischen OpenClaw-Laufzeit und Model-Gateway
 - cluster-weite Neutralitaet statt Fabrik-Sonderrolle
 - klarere Betriebs-, Upgrade- und Fehlergrenzen
 - bessere Grundlage fuer spaeteres Routing, Logging, Limits und Kostensteuerung
+- Platzierung im **Service-VLAN `10.6.7.x` hinter OPNsense** statt im flacheren `192.168.1.x`-Bereich ohne vorgeschaltete Firewall
 
 ## C) VM-Spezifikation `vm-110-model-gateway`
 
@@ -63,7 +65,7 @@ Direkt produktiv auslegen:
 
 ### Betriebssystem
 Zulaessige Basis:
-- **Debian 12**
+- **Debian 13**
 - **Ubuntu 22.04 LTS**
 - **Ubuntu 24.04 LTS**
 
