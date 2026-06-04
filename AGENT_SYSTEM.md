@@ -29,6 +29,14 @@
 - OpenClaw als GitHub-Proxy + SSH-Bruecke fuer Cluster-Operationen
 - Sessions persistieren in `/root/.openclaw/sessions/` auf vm-100
 
+### 7. Session-Hygiene & Kontext-Disziplin
+- "Eine Aufgabe = eine Session": bei Abschluss strukturierten Handoff (Intent / verifizierbarer Stand / Artefakt-Spur / Entscheidungen / naechster Schritt) in den Continuity-Layer schreiben, dann Session beenden
+- Bei 70-80% Kontext-Auslastung handeln (nicht erst bei 90%+): erst maskieren, dann kompaktieren, dann ggf. frische Session
+- Tool-Outputs > ~2000 Token in Dateien auslagern, nur kompakte Referenz + Kurz-Zusammenfassung in den Kontext
+- System-Prompt, Tool-Schemas und aktive Fehlertexte werden NIE komprimiert/maskiert
+- Billiges Modell als Default, starkes nur fuer echten Reasoning-Bedarf; Memory just-in-time laden (flachste Schicht, die reicht)
+- Details: 09_Architektur/KNOWLEDGE_CONTINUITY_LAYER.md -> Abschnitt "Session-Hygiene". Harte Durchsetzung am LiteLLM-Gateway (vm-110)
+
 ## Review-Triggers (Pflicht-Cross-Check)
 
 Diese Datei MUSS geprueft und ggf. ergaenzt werden wenn:
@@ -45,6 +53,7 @@ Diese Datei MUSS geprueft und ggf. ergaenzt werden wenn:
 | Datum | Anlass | Was geaendert | Wer |
 |---|---|---|---|
 | 2026-05-13 | Initial-Rollout | Erstanlage, alle 6 Invarianten kanonisiert, 7 Specializations verlinkt | OpenClaw + Claude (Klaus' GO) |
+| 2026-06-04 | Invariant 7 Session-Hygiene | Invariant 7 (Session-Hygiene & Kontext-Disziplin) ergaenzt; Detail in 09_Architektur/KNOWLEDGE_CONTINUITY_LAYER.md Abschnitt Session-Hygiene | OpenClaw + Claude (Klaus' GO) |
 
 ## Specializations-Index
 

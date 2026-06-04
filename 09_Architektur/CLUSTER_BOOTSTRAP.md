@@ -18,6 +18,7 @@ Die cluster-weite Bootstrap-Lesereihenfolge ist:
 5. `cluster-docs/09_Architektur/MODEL_ACCESS_ARCHITECTURE.md`
 6. `cluster-docs/09_Architektur/KNOWLEDGE_CONTINUITY_LAYER.md`
 7. `cluster-docs/08_Betrieb/02_OpenClaw-Betriebshandbuch.md`
+8. cluster-docs/AGENT_SYSTEM.md -> Invariant 7 (Session-Hygiene) + 09_Architektur/KNOWLEDGE_CONTINUITY_LAYER.md -> Abschnitt "Session-Hygiene"
 
 Zweck dieser Reihenfolge:
 - zuerst Gesamtlage,

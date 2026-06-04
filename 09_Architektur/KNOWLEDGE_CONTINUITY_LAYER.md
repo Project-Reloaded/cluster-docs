@@ -185,3 +185,55 @@ Noch offen bzw. nicht fertig belegt als cluster-weit produktiv:
 
 ## J) Status
 **PHASE 1 TEILWEISE LIVE-IDLE — Basis laeuft, Vollausbau noch offen.**
+## K) Session-Hygiene & Context-Engineering-Doktrin
+
+> Zweck: Token-Verbrauch senken und Agenten-Qualitaet ueber lange Laeufe stabil halten -- verbindlich fuer alle Cluster-Agenten (OpenClaw, Paperclip-/HQ-Agenten, jeder kuenftige Agent). Bewusst runtime-agnostisch formuliert.
+> Quellen: destilliert aus muratcankoylan/Agent-Skills-for-Context-Engineering (MIT), Skills context-compression, context-optimization, filesystem-context, memory-systems. Adaption auf Cluster-Kontext.
+
+Durchsetzung in drei Schichten: (1) Master-Invariant 7 in AGENT_SYSTEM.md bindet alle Agenten, die den Master erben; (2) AGENT_SPECIALIZATION-Template + diese Bootstrap-Doktrin binden jede kuenftig neu angelegte Fabrik; (3) das LiteLLM-Gateway (vm-110) ist die harte mechanische Grenze -- jeder Token fliesst durch das Gateway, ein Budget/Cache dort bindet jeden Agenten unabhaengig davon, ob er die Doktrin gelesen hat. Schicht 1+2 sind Verhaltensregeln, Schicht 3 ist die Garantie. Nur alle drei zusammen wirken.
+
+### Die Regeln
+
+1. Eine Aufgabe = eine Session. Auftrag fertig -> Handoff schreiben -> Session beenden. Neue Aufgabe -> frische Session, die zuerst den Handoff liest. Keine 200k-Session ueber mehrere Aufgaben weiterschleppen. In einer Agent-Schleife wird bei jedem Turn der gesamte Kontext neu mitgeschickt und bezahlt -- eine aufgeblaehte Session multipliziert die Kosten ueber jeden Folge-Turn.
+
+2. Kontext-Schwellwert als Ausloeser. Bei 70-80% Kontext-Auslastung handeln, nicht erst bei 90%+ (Compaction unter Druck verliert genau die kritischen Details). Reihenfolge: erst maskieren (Bulk raus), dann kompaktieren (Rest zusammenfassen), dann ggf. frische Session.
+
+3. Tool-Output in Dateien auslagern, nicht in den Kontext. Outputs > ~2000 Token (Downloads-Progress, Logs, lange Suchergebnisse, Terminal-Dumps) -> in eine Datei schreiben, nur kompakte Referenz + Kurz-Zusammenfassung in den Kontext zurueckgeben, bei Bedarf per grep/Zeilenbereich gezielt nachladen. Tool-Outputs sind 80%+ der Token in typischen Agent-Laeufen -- der groesste Hebel.
+
+4. Strukturierter Handoff statt Freitext. Der Handoff ist die einzige Bruecke zwischen Session-Ende und naechstem Start -- ein schlechter Handoff verliert Kontext genauso wie verlustbehaftete Compaction. Pflicht-Abschnitte:
+
+```markdown
+## Auftrag / Intent
+[Was sollte erreicht werden]
+
+## Verifizierbarer Stand
+[Was laeuft nachweislich -- mit Befehl/Check, nicht Bauchgefuehl]
+
+## Artefakt-Spur
+- Erstellt: <volle Pfade>
+- Geaendert: <Pfad>: <was genau, inkl. Funktions-/Variablennamen>
+- Gelesen (unveraendert): <Pfad>
+- IDs verbatim: Fehlercodes, Commit-SHAs, Service-Namen, Ports
+
+## Entscheidungen
+[Was warum entschieden -- damit es nicht neu hergeleitet wird]
+
+## Naechster Schritt
+1. ...
+```
+
+Identifier (Pfade, Fehlercodes, Commit-SHAs, Ports) verbatim in eigenen Abschnitten halten, nicht in Prosa einbetten -- die "Artefakt-Spur" ist die schwaechste Dimension jeder Zusammenfassung.
+
+5. Was NIE komprimiert/maskiert wird. System-Prompt, Tool-Definitionen/Schemas und aktive Fehlermeldungen (waehrend laufendem Debugging, Fehler in den letzten 3 Turns) bleiben unangetastet. Wer ein Tool-Schema wegfasst, zerstoert die Tool-Faehigkeit des Agenten; wer Fehlertexte maskiert, bricht die Debug-Schleife.
+
+6. Cache-freundlicher Prompt-Aufbau. Stabiles zuerst, Dynamisches zuletzt: System-Prompt -> Tool-Defs -> Templates -> History -> aktuelle Anfrage. Keine Zeitstempel/Session-IDs/Zaehler im stabilen Prefix -- schon ein Whitespace-Unterschied invalidiert den ganzen KV-Cache dahinter. Stabiler Prefix = Prompt-Caching greift = bis zu ~50% guenstigere Input-Token bei Wiederholung.
+
+7. Billiges Modell als Default, starkes nur fuer harte Brocken. Routine (SSH, Datei-Ops, Installs) braucht kein Flaggschiff. Default = guenstiges Modell, Eskalation auf das starke nur bei echtem Reasoning-Bedarf.
+
+8. Memory: flachste Schicht, die reicht -- just-in-time laden. Working (Scratchpad) -> Short-term (Datei) -> Long-term (mem0/Qdrant), nur eskalieren wenn die flachere Schicht die Abruf-Qualitaet nicht mehr liefert. Memories just-in-time mit Relevanzfilter abrufen, nicht en bloc. Stale Memories verfallen lassen/entwerten (Zeitvaliditaet), sonst vergiften sie den Kontext. (Deckt sich mit vm-112-Tagebuch + mem0 + Memory-Markdown.)
+
+### Harte Schicht: LiteLLM-Gateway vm-110
+
+Bindet alle Agenten ohne deren Mitwirkung. Pro virtuellem Key einzustellen (separater Live-Schritt, erst nach Klaus' GO -- Doku vor Live): Per-Key-Budget mit Reset-Fenster (max_budget + budget_duration), Rate-Limits (rpm_limit/tpm_limit), Response-Caching (z.B. Redis), Prompt-/Prefix-Caching durchreichen, Fallback-Routing bei 429/Limit (mehrere Deployments, automatisch am Gateway), Spend-Tracking. Messen vor Optimieren: erst Spend-Tracking aktivieren und sehen wer die Token verbrennt, dann gezielt Budgets/Caching setzen.
+
+Lizenz: Regeln destilliert aus muratcankoylan/Agent-Skills-for-Context-Engineering (MIT). Stand: 2026-06-04.
