@@ -1,0 +1,8 @@
+[Unit]
+Description=Cluster Guardian L0 (lokaler Floor)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/cluster-guardian/cluster-guardian.sh
+TimeoutStartSec=30
